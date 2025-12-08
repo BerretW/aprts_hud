@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Ikony (volitelné) -->
+    <title>RedM HUD</title>
+</head>
+<body>
+    <div id="hud-container">
+        <!-- Elementy se generují přes JS -->
+    </div>
+
+    <!-- Hlavní overlay pro Edit Mode -->
+    <div id="edit-overlay" style="display: none;">
+        <div class="edit-info">
+            <h1>EDIT MODE</h1>
+            <p>Levé tl. myši: Přesunout | Kliknutí: Nastavení elementu</p>
+            <button class="save-btn" onclick="closeEditMode()">ULOŽIT A ZAVŘÍT</button>
+        </div>
+    </div>
+
+    <!-- Modální okno pro nastavení konkrétního ukazatele -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Nastavení Ukazatele</h2>
+            
+            <div class="form-group">
+                <label>Styl zobrazení</label>
+                <select id="input-style">
+                    <option value="bar">Horizontální Bar</option>
+                    <option value="circle">Kulatý Progress</option>
+                    <option value="text">Pouze Text</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Barva Progressu / Textu</label>
+                <input type="color" id="input-color-fg">
+            </div>
+
+            <div class="form-group">
+                <label>Barva Pozadí</label>
+                <input type="color" id="input-color-bg">
+            </div>
+
+            <div class="form-group">
+                <label>Velikost (Scale): <span id="scale-val">1.0</span></label>
+                <input type="range" id="input-scale" min="0.5" max="2.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="form-group checkbox">
+                <label>
+                    <input type="checkbox" id="input-enabled"> Zobrazit ukazatel
+                </label>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="saveModal()">Použít</button>
+                <button class="cancel" onclick="closeModal()">Zrušit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

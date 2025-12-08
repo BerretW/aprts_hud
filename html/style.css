@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    user-select: none;
+    font-family: 'Roboto Condensed', sans-serif; /* Lepší font pro HUD */
+}
+
+#hud-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* --- HUD ELEMENTY --- */
+.hud-element {
+    position: absolute;
+    /* transform-origin: center zajišťuje, že se zvětšuje od středu */
+    transform-origin: top left; 
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+/* Edit mode */
+.editable {
+    outline: 2px dashed rgba(255, 255, 0, 0.7);
+    cursor: grab;
+    z-index: 1000;
+}
+.editable:hover {
+    outline: 2px solid yellow;
+    background-color: rgba(255, 255, 0, 0.1);
+}
+
+/* Kontejner baru */
+.style-bar {
+    min-width: 160px;
+    height: 22px;
+    /* Tmavé pozadí s texturou */
+    background: repeating-linear-gradient(
+        45deg,
+        #1a1a1a,
+        #1a1a1a 10px,
+        #222 10px,
+        #222 20px
+    );
+    border: 2px solid #5c4d3c; /* Hnědý "kožený" okraj */
+    border-radius: 2px;
+    box-shadow: inset 0 0 10px #000, 0 2px 5px rgba(0,0,0,0.8);
+    position: relative;
+}
+
+/* Výplň baru */
+.style-bar .bar-fill {
+    height: 100%;
+    /* Barva se bere z JS, ale přidáme jí lesk/přechod */
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(0,0,0,0.2));
+    box-shadow: 0 0 10px currentColor; /* Záře podle barvy */
+    transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+}
+
+/* Jemná linka na konci progressu */
+.style-bar .bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 0 5px white;
+}
+
+/* Text */
+.style-bar .label {
+    font-family: 'Courier New', serif;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #000;
+    color: #e0d0b0; /* Barva starého papíru */
+}
+/* STYL: TEXT */
+.style-text {
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+    padding: 5px;
+}
+
+/* STYL: CIRCLE (Canvas via jQuery Library) */
+.style-circle {
+    position: relative;
+    width: 60px;  /* Velikost kontejneru */
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Samotný canvas, který knihovna vygeneruje */
+.style-circle canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); /* Stín pod kruhem */
+}
+
+/* Číslo nebo ikona uprostřed */
+.style-circle .circle-text {
+    position: relative;
+    z-index: 2; /* Musí být nad canvasem */
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+/* --- MODAL & UI --- */
+#edit-overlay {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 5000; /* Musí být vyšší než .editable (1000) */
+    pointer-events: none; /* Dovolí klikat "skrz" prázdná místa na HUD elementy */
+    display: flex; /* Zarovnání panelu na střed */
+    justify-content: center;
+    padding-top: 50px;
+}
+
+#edit-overlay .edit-info {
+    pointer-events: auto; /* TOHLE JE DŮLEŽITÉ - zapne klikání pro panel a tlačítko */
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid #d9a838;
+    height: fit-content;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    position: relative; /* Aby fungoval z-index kontext */
+    z-index: 5001;
+}
+
+.save-btn {
+    background: #d9a838; 
+    border: none; 
+    padding: 10px 20px;
+    font-weight: bold; 
+    font-size: 16px;
+    cursor: pointer; 
+    margin-top: 15px;
+    color: black;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.save-btn:hover {
+    background: #fff;
+}
+
+/* Settings Modal */
+.modal {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 6000; /* Modal musí být nad vším, i nad Edit overlayem */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto; /* Modal musí blokovat vše pod sebou */
+}
+.hidden { display: none !important; }
+
+.modal-content {
+    background: #1a1a1a;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    border: 2px solid #555;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+}
+.modal-content h2 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #ccc; }
+.form-group input[type="color"] { width: 100%; height: 40px; border: none; cursor: pointer; }
+.form-group select { width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #555; }
+.form-group input[type="range"] { width: 100%; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions button { flex: 1; padding: 10px; cursor: pointer; border: none; font-weight: bold; }
+.modal-actions button:first-child { background: #38d960; color: black; }
+.modal-actions button.cancel { background: #d93838; color: white; }
