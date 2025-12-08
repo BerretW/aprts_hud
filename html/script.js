@@ -1,9 +1,40 @@
-// Výchozí nastavení
+// CONFIG UPDATE: Přidáno maxOuter a maxInner
 const defaultSettings = {
-    health: { label: "HP", colorFg: "#d93838", colorBg: "#4a1212", value: 100, style: 'bar', scale: 1.0, x: 2, y: 90, enabled: true },
-    stamina: { label: "STA", colorFg: "#d9a838", colorBg: "#4a3812", value: 100, style: 'bar', scale: 1.0, x: 10, y: 90, enabled: true },
-    hunger: { label: "JÍDLO", colorFg: "#38d960", colorBg: "rgba(0,0,0,0.5)", value: 80, style: 'circle', scale: 1.0, x: 18, y: 88, enabled: true },
-    thirst: { label: "PITÍ", colorFg: "#388bd9", colorBg: "rgba(0,0,0,0.5)", value: 90, style: 'circle', scale: 1.0, x: 22, y: 88, enabled: true }
+    health: { 
+        label: "HP", icon: "fa-solid fa-heart", mode: "dual",
+        srcOuter: "health_outer", srcInner: "health_inner",
+        colorOuter: "#d93838", colorInner: "#ff8080", colorBg: "#4a1212", 
+        min: 0, maxOuter: 600, maxInner: 100, // Zde je změna
+        speed: 400, scale: 1.0, x: 2, y: 90, enabled: true 
+    },
+    stamina: { 
+        label: "STA", icon: "fa-solid fa-bolt", mode: "dual",
+        srcOuter: "stamina_outer", srcInner: "stamina_inner",
+        colorOuter: "#d9a838", colorInner: "#ffe080", colorBg: "#4a3812", 
+        min: 0, maxOuter: 134, maxInner: 100, // Stamina outer bývá 100, ale může být víc
+        speed: 400, scale: 1.0, x: 10, y: 90, enabled: true 
+    },
+    hunger: { 
+        label: "JÍDLO", icon: "fa-solid fa-drumstick-bite", mode: "single",
+        srcOuter: "hunger", srcInner: null,
+        colorOuter: "#38d960", colorInner: null, colorBg: "#124a1a", 
+        min: 0, maxOuter: 100, maxInner: 100,
+        speed: 800, scale: 1.0, x: 18, y: 88, enabled: true 
+    },
+    thirst: { 
+        label: "PITÍ", icon: "fa-solid fa-droplet", mode: "single",
+        srcOuter: "thirst", srcInner: null,
+        colorOuter: "#388bd9", colorInner: null, colorBg: "#122b4a", 
+        min: 0, maxOuter: 100, maxInner: 100,
+        speed: 800, scale: 1.0, x: 22, y: 88, enabled: true 
+    },
+    stress: { 
+        label: "PITÍ", icon: "fa-solid fa-droplet", mode: "single",
+        srcOuter: "thirst", srcInner: null,
+        colorOuter: "#388bd9", colorInner: null, colorBg: "#122b4a", 
+        min: 0, maxOuter: 100, maxInner: 100,
+        speed: 800, scale: 1.0, x: 22, y: 88, enabled: true 
+    }
 };
 
 let indicators = JSON.parse(JSON.stringify(defaultSettings));
@@ -13,8 +44,6 @@ let currentEditingKey = null;
 $(document).ready(function() {
     loadSettings();
     renderHud();
-
-    // Slider listener
     $('#input-scale').on('input', function() { $('#scale-val').text($(this).val()); });
 
     window.addEventListener('message', function(event) {
@@ -23,7 +52,18 @@ $(document).ready(function() {
         else if (data.type === "toggleEdit") toggleEditMode(data.enable);
         else if (data.type === "loadSettings") {
             if (data.settings && Object.keys(data.settings).length > 0) {
-                $.extend(true, indicators, data.settings);
+                // Sloučení a zachování struktury
+                let loaded = data.settings;
+                for (let k in loaded) {
+                    if (indicators[k]) {
+                        // Fix pro staré uložené verze, které neměly maxOuter/Inner
+                        if (loaded[k].max && !loaded[k].maxOuter) {
+                            loaded[k].maxOuter = loaded[k].max;
+                            loaded[k].maxInner = 100;
+                        }
+                        $.extend(true, indicators[k], loaded[k]);
+                    }
+                }
                 renderHud();
             }
         }
@@ -40,7 +80,14 @@ function renderHud() {
         el.css('transform', `scale(${data.scale})`);
         if (!data.enabled) el.css('opacity', '0.3');
 
-        el.html(generateInnerHtml(key, data));
+        // ZMĚNA ZDE: Přidán style="color: ..." do ikony
+        let iconColor = data.colorOuter; // Barva ikony podle vnějšího kruhu
+        let iconHtml = data.icon ? `<i class="${data.icon} hud-icon" style="color: ${iconColor};"></i>` : "";
+        
+        let content = `<div class="style-circle">
+                          <div class="circle-content">${iconHtml}</div>
+                       </div>`;
+        el.html(content);
 
         el.on('mousedown', function(e) {
             if (!isEditMode) return;
@@ -48,199 +95,162 @@ function renderHud() {
         });
 
         $('#hud-container').append(el);
-
-        // !!! ZDE JE ZMĚNA PRO KNIHOVNU !!!
-        // Pokud je styl 'circle', musíme inicializovat plugin
-        if (data.style === 'circle') {
-            initCircleProgress(key, data);
-        }
-        
-        // Aplikace barev pro ostatní styly
-        if (data.style !== 'circle') {
-            updateVisuals(key, data);
-        }
+        initDualCircle(key, data);
     }
 }
 
-function generateInnerHtml(key, data) {
-    if (data.style === 'bar') {
-        return `
-            <div class="style-bar">
-                <div class="label">${data.label}</div>
-                <div class="bar-fill"></div>
-            </div>
-        `;
-    } else if (data.style === 'circle') {
-        // Pouze kontejner, canvas si vytvoří knihovna sama
-        return `
-            <div class="style-circle">
-                <div class="circle-text">${Math.round(data.value)}</div>
-            </div>
-        `;
-    } else {
-        return `<div class="style-text">${data.label}: <span>${Math.round(data.value)}</span></div>`;
-    }
-}
-
-// Inicializace Circle Progress pluginu
-function initCircleProgress(key, data) {
-    let el = $(`#${key} .style-circle`);
+function initDualCircle(key, data) {
+    let container = $(`#${key} .style-circle`);
     
-    el.circleProgress({
-        value: data.value / 100, // Knihovna bere 0.0 až 1.0
-        size: 60,                // Velikost v px (stejná jako v CSS)
-        startAngle: -Math.PI / 2,// Začátek nahoře (12 hodin)
-        thickness: 6,            // Tloušťka linky
-        lineCap: 'round',        // Kulaté konce
-        fill: { color: data.colorFg }, // Barva popředí
-        emptyFill: data.colorBg        // Barva pozadí
+    // 1. OUTER RING
+    // Vytvoříme div s třídou ring-outer (styly řeší CSS)
+    let outerDiv = $('<div class="ring-outer"></div>').appendTo(container);
+
+    outerDiv.circleProgress({
+        value: 0,
+        size: 70,
+        startAngle: -Math.PI / 2,
+        thickness: 6,
+        lineCap: 'round',
+        fill: { color: data.colorOuter },
+        emptyFill: data.colorBg, // Pozadí baru
+        animation: { duration: parseInt(data.speed) }
     });
-}
 
-function updateVisuals(key, data) {
-    let el = $(`#${key}`);
-    
-    if (data.style === 'bar') {
-        el.find('.style-bar').css('background', data.colorBg);
-        el.find('.bar-fill').css('background', data.colorFg);
-    } else if (data.style === 'circle') {
-        // Pro update barev u circle-progress musíme změnit options a překreslit
-        let circleEl = el.find('.style-circle');
-        
-        // Zkontrolujeme, zda je plugin inicializovaný
-        if (circleEl.data('circle-progress')) {
-            circleEl.circleProgress({
-                fill: { color: data.colorFg },
-                emptyFill: data.colorBg
-            });
-        }
-    } else {
-        el.find('.style-text').css({
-            'color': data.colorFg,
-            'background': data.colorBg
+    // 2. INNER RING (Pouze v módu dual)
+    if (data.mode === 'dual') {
+        // Vytvoříme div s třídou ring-inner (styly řeší CSS včetně scale)
+        let innerDiv = $('<div class="ring-inner"></div>').appendTo(container);
+
+        innerDiv.circleProgress({
+            value: 0,
+            size: 70, // Velikost canvasu stejná, zmenší se přes CSS transform
+            startAngle: -Math.PI / 2,
+            thickness: 8, // Opticky tlustší, protože se celý kruh zmenší
+            lineCap: 'round',
+            fill: { color: data.colorInner || "#ffffff" },
+            emptyFill: "rgba(0,0,0,0)", // Průhledné pozadí, abychom viděli skrz na outer
+            animation: { duration: parseInt(data.speed) }
         });
     }
 }
 
 function updateValues(statusData) {
-    for (const [key, val] of Object.entries(statusData)) {
-        if (!indicators[key]) continue;
-        
-        indicators[key].value = val;
+    for (const [key, data] of Object.entries(indicators)) {
+        if (!data.enabled) continue;
+
+        let valOuter = statusData[data.srcOuter] || 0;
+        let valInner = (data.mode === 'dual') ? (statusData[data.srcInner] || 0) : 0;
+
+        // VÝPOČET PROCENT S ROZDÍLNÝM MAX
+        // Použijeme data.maxOuter a data.maxInner. Pokud neexistují (starý save), fallback na 100.
+        let maxO = data.maxOuter || 100;
+        let maxI = data.maxInner || 100;
+        let min = data.min || 0;
+
+        let pctOuter = (valOuter - min) / (maxO - min);
+        let pctInner = (valInner - min) / (maxI - min);
+
+        // Clamp 0-1 (aby to nepřeteklo grafiku)
+        pctOuter = Math.min(Math.max(pctOuter, 0), 1);
+        pctInner = Math.min(Math.max(pctInner, 0), 1);
+
         let el = $(`#${key}`);
 
-        if (indicators[key].style === 'bar') {
-            el.find('.bar-fill').css('width', `${val}%`);
-        } else if (indicators[key].style === 'circle') {
-            // Update hodnoty v knihovně (0.0 - 1.0)
-            let circleEl = el.find('.style-circle');
-            if (circleEl.data('circle-progress')) {
-                circleEl.circleProgress('value', val / 100);
+        let outerEl = el.find('.ring-outer');
+        if (outerEl.data('circle-progress')) {
+            outerEl.circleProgress('value', pctOuter);
+        }
+
+        if (data.mode === 'dual') {
+            let innerEl = el.find('.ring-inner');
+            if (innerEl.data('circle-progress')) {
+                innerEl.circleProgress('value', pctInner);
             }
-            // Update textu
-            el.find('.circle-text').text(Math.round(val));
-        } else {
-            el.find('span').text(Math.round(val));
         }
     }
 }
 
-// --- MODAL, EDIT, SAVE (Zbytek zůstává stejný, jen zkráceně pro kontext) ---
-
+// --- MODAL LOGIKA ---
 function openModal(key) {
     currentEditingKey = key;
     let data = indicators[key];
-    $('#input-style').val(data.style);
-    $('#input-color-fg').val(data.colorFg);
+
+    $('#input-mode').val(data.mode);
+    $('#input-icon').val(data.icon);
     
-    // Konverze rgba na hex pro input type="color" není triviální, 
-    // předpokládáme že uživatel používá HEX. Pokud máš v defaultu RGBA,
-    // input type="color" to nevezme správně. Doporučuji používat v defaultu HEX.
+    $('#input-src-outer').val(data.srcOuter);
+    $('#input-src-inner').val(data.srcInner);
+
+    // Načtení Max hodnot
+    $('#input-max-outer').val(data.maxOuter || 100);
+    $('#input-max-inner').val(data.maxInner || 100);
+    $('#input-min').val(data.min);
+
+    $('#input-color-outer').val(data.colorOuter);
+    $('#input-color-inner').val(data.colorInner || "#ffffff");
     $('#input-color-bg').val(data.colorBg.startsWith('#') ? data.colorBg : "#000000");
-    
+
     $('#input-scale').val(data.scale);
     $('#scale-val').text(data.scale);
     $('#input-enabled').prop('checked', data.enabled);
+    
+    toggleModalFields(data.mode);
     $('#settings-modal').removeClass('hidden');
 }
 
-function closeModal() {
-    $('#settings-modal').addClass('hidden');
-    currentEditingKey = null;
+function toggleModalFields(mode) {
+    if (mode === 'single') {
+        $('.dual-only').hide();
+    } else {
+        $('.dual-only').show(); // Používáme flex pro zachování layoutu, nebo show
+        $('.dual-only').css('display', 'block'); // Pro jistotu u inputů
+        // U row elementů to chceme vrátit do flexu, pokud jsou ve form-row
+        $('.form-row .dual-only').css('display', 'block'); 
+    }
 }
 
 function saveModal() {
     if (!currentEditingKey) return;
     let k = currentEditingKey;
-    let oldStyle = indicators[k].style;
 
-    indicators[k].style = $('#input-style').val();
-    indicators[k].colorFg = $('#input-color-fg').val();
+    indicators[k].mode = $('#input-mode').val();
+    indicators[k].srcOuter = $('#input-src-outer').val();
+    indicators[k].srcInner = $('#input-src-inner').val();
+
+    // Uložení Max hodnot
+    indicators[k].maxOuter = parseFloat($('#input-max-outer').val()) || 100;
+    indicators[k].maxInner = parseFloat($('#input-max-inner').val()) || 100;
+    indicators[k].min = parseFloat($('#input-min').val()) || 0;
+
+    indicators[k].colorOuter = $('#input-color-outer').val();
+    indicators[k].colorInner = $('#input-color-inner').val();
     indicators[k].colorBg = $('#input-color-bg').val();
+    
+    indicators[k].icon = $('#input-icon').val();
     indicators[k].scale = parseFloat($('#input-scale').val());
     indicators[k].enabled = $('#input-enabled').is(':checked');
-
-    // Pokud se změnil styl, musíme kompletně přerenderovat element,
-    // protože circle-progress potřebuje čistý start nebo zničení canvasu.
-    // Nejjednodušší je zavolat renderHud() nebo překreslit jen tento element.
+    
     renderHud(); 
     closeModal();
 }
 
-function toggleEditMode(enable) {
-    isEditMode = enable;
-    if (enable) {
-        $('#edit-overlay').fadeIn();
-        $('.hud-element').addClass('editable');
-        renderHud();
-    } else {
-        $('#edit-overlay').fadeOut();
-        $('.hud-element').removeClass('editable');
-        saveSettings();
-        renderHud();
-    }
-}
-
-function closeEditMode() {
-    saveSettings();
-    $.post('https://' + GetParentResourceName() + '/closeEdit', JSON.stringify({}));
-}
-
+// Zbytek beze změny...
+$(document).on('change', '#input-mode', function() { toggleModalFields($(this).val()); });
+function toggleEditMode(enable) { isEditMode = enable; if (enable) { $('#edit-overlay').fadeIn(); $('.hud-element').addClass('editable'); renderHud(); } else { $('#edit-overlay').fadeOut(); $('.hud-element').removeClass('editable'); saveSettings(); renderHud(); } }
+function closeEditMode() { saveSettings(); $.post('https://' + GetParentResourceName() + '/closeEdit', JSON.stringify({})); }
+function closeModal() { $('#settings-modal').addClass('hidden'); currentEditingKey = null; }
+function saveSettings() { localStorage.setItem('redm_hud_v7', JSON.stringify(indicators)); $.post('https://' + GetParentResourceName() + '/saveSettings', JSON.stringify(indicators)); }
+function loadSettings() { let saved = localStorage.getItem('redm_hud_v7'); if (saved) { let parsed = JSON.parse(saved); $.extend(true, indicators, defaultSettings, parsed); } }
 function dragElement(e, el, key) {
-    let startX = e.clientX;
-    let startY = e.clientY;
-    let startLeft = el.position().left;
-    let startTop = el.position().top;
-    let hasMoved = false;
-
+    let startX = e.clientX, startY = e.clientY, startLeft = el.position().left, startTop = el.position().top, hasMoved = false;
     $(document).on('mousemove.drag', function(evt) {
-        let dx = evt.clientX - startX;
-        let dy = evt.clientY - startY;
-        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasMoved = true;
-        el.css({ top: startTop + dy, left: startLeft + dx });
+        if (Math.abs(evt.clientX - startX) > 2 || Math.abs(evt.clientY - startY) > 2) hasMoved = true;
+        el.css({ top: startTop + (evt.clientY - startY), left: startLeft + (evt.clientX - startX) });
     });
-
     $(document).on('mouseup.drag', function() {
         $(document).off('.drag');
         if (!hasMoved) openModal(key);
-        else {
-            let percentX = (el.position().left / $(window).width()) * 100;
-            let percentY = (el.position().top / $(window).height()) * 100;
-            indicators[key].x = percentX;
-            indicators[key].y = percentY;
-        }
+        else { indicators[key].x = (el.position().left / $(window).width()) * 100; indicators[key].y = (el.position().top / $(window).height()) * 100; }
     });
-}
-
-function saveSettings() {
-    localStorage.setItem('redm_hud_v3', JSON.stringify(indicators));
-    $.post('https://' + GetParentResourceName() + '/saveSettings', JSON.stringify(indicators));
-}
-
-function loadSettings() {
-    let saved = localStorage.getItem('redm_hud_v3');
-    if (saved) {
-        let parsed = JSON.parse(saved);
-        $.extend(true, indicators, parsed);
-    }
 }
