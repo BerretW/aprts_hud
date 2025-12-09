@@ -27,27 +27,15 @@ const defaultSettings = {
         min: 0, maxOuter: 100, maxInner: 100,
         speed: 800, scale: 1.0, x: 18, y: 93, enabled: true 
     },
-    stress: { 
-        label: "STRES", icon: "fa-solid fa-brain", style: "gauge", mode: "single",
-        srcOuter: "stress", srcInner: null,
-        colorOuter: "#a838d9", colorInner: null, colorBg: "#2b0a2b", 
+    // Ukázka výchozího nastavení pro NUTRI
+    nutrition: {
+        label: "AVG", icon: "", style: "nutri", mode: "single",
+        srcOuter: null, srcInner: null,
+        // Defaultní sloty, uživatel si je musí napojit na správná data z exportu
+        slots: ["protein", "fats", "carbs", "vitamins"], 
+        colorOuter: "#ffffff", colorInner: null, colorBg: "rgba(0,0,0,0.55)",
         min: 0, maxOuter: 100, maxInner: 100,
-        speed: 800, scale: 1.0, x: 25, y: 88, enabled: true 
-    },
-    temp: { 
-        label: "TEPLOTA", icon: "fa-solid fa-temperature-high", style: "circle", mode: "single",
-        srcOuter: "temp", srcInner: null,
-        colorOuter: "#a838d9", colorInner: null, colorBg: "#2b0a2b", 
-        min: 0, maxOuter: 100, maxInner: 100,
-        speed: 800, scale: 1.0, x: 30, y: 88, enabled: false 
-    },
-    // Příklad nového bloku
-    nutri: {
-        label: "NUTRI", icon: "fa-solid fa-utensils", style: "stack", mode: "single",
-        srcOuter: null, srcInner: null, slots: ["hunger", "thirst", "temp"],
-        colorOuter: "#ffffff", colorInner: null, colorBg: "rgba(0,0,0,0.7)",
-        min: 0, maxOuter: 100, maxInner: 100,
-        speed: 400, scale: 1.0, x: 40, y: 88, enabled: false
+        speed: 400, scale: 1.0, x: 45, y: 85, enabled: false
     }
 };
 
@@ -57,6 +45,9 @@ let currentEditingKey = null;
 let snapToGrid = false;
 const GRID_SIZE = 40;
 let availableVariables = new Set(); 
+
+// Definice barev pro NUTRI styl (podle požadavku)
+const NUTRI_COLORS = ['#7b8a9a', '#c9a36a', '#7fa075', '#a17bb5'];
 
 $(document).ready(function() {
     loadSettings();
@@ -105,8 +96,57 @@ function renderHud() {
         
         if (!data.enabled) el.css('opacity', '0.3');
 
+        // --- NUTRI STYLE (MULTI-RING SVG) ---
+        if (data.style === 'nutri') {
+            // Generování SVG
+            const size = 130;
+            const stroke = 6;
+            const gap = 3;
+            const startAngle = -225;
+            const sweep = 270;
+            const center = size / 2;
+            const maxR = center - stroke / 2;
+            const endAngle = startAngle + sweep;
+
+            let pathsHtml = "";
+            let fillsHtml = "";
+            let innerBgR = 0;
+
+            // Generujeme 4 kruhy (pro 4 sloty)
+            for (let i = 0; i < 4; i++) {
+                const radius = maxR - i * (stroke + gap);
+                if (i === 3) innerBgR = radius - stroke; // Vnitřní pozadí pro text
+
+                // Vypočítáme SVG cestu (Arc)
+                const d = describeArc(center, center, radius, startAngle, endAngle);
+                
+                // Track (šedé pozadí)
+                pathsHtml += `<path d="${d}" class="nutri-track" stroke-width="${stroke}" />`;
+                
+                // Fill (barevný popředí)
+                // Barva se bere z konstanty NUTRI_COLORS nebo fallback
+                const color = NUTRI_COLORS[i] || "#ffffff";
+                
+                // ID pro update: {key}_fill_{i}
+                fillsHtml += `<path id="${key}_fill_${i}" d="${d}" class="nutri-fill" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="0 0" stroke-dashoffset="0" />`;
+            }
+
+            el.html(`
+                <div class="style-nutri">
+                    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="nutri-circle-svg">
+                        <g class="tracks">${pathsHtml}</g>
+                        <g class="fills">${fillsHtml}</g>
+                        <circle cx="${center}" cy="${center}" r="${Math.max(0, innerBgR)}" fill="${data.colorBg}" />
+                    </svg>
+                    <div class="nutri-center">
+                        <div class="nutri-val" id="${key}_val">0</div>
+                        <div class="nutri-lbl">${data.label || 'AVG'}</div>
+                    </div>
+                </div>
+            `);
+        }
         // --- GAUGE STYLE (Rafička) ---
-        if (data.style === 'gauge') {
+        else if (data.style === 'gauge') {
             let iconHtml = data.icon ? `<i class="${data.icon} gauge-icon" style="color:${data.colorOuter}"></i>` : "";
             el.html(`
                 <div class="style-gauge">
@@ -122,7 +162,6 @@ function renderHud() {
         // --- STACK STYLE (Multi-Value) ---
         else if (data.style === 'stack') {
             let rowsHtml = '';
-            // Iterujeme přes definované sloty (až 5)
             let slots = data.slots || [];
             slots.forEach((variable, index) => {
                 if(variable && variable !== "") {
@@ -205,7 +244,6 @@ function initDualCircle(key, data) {
     }
 }
 
-
 // --- UPDATE HODNOT ---
 function updateValues(statusData) {
     for (const [key, data] of Object.entries(indicators)) {
@@ -215,90 +253,101 @@ function updateValues(statusData) {
         let min = data.min || 0;
         let maxO = data.maxOuter || 100;
 
-        // Pomocná funkce: Převede jakýkoliv vstup na číslo pro grafiku (0 až Max)
         const getNumericValue = (rawVal, maxLimit) => {
             if (typeof rawVal === 'number') return rawVal;
-            if (typeof rawVal === 'boolean') return rawVal ? maxLimit : 0; // True = 100%, False = 0%
-            return 0; // Text nebo null = 0
+            if (typeof rawVal === 'boolean') return rawVal ? maxLimit : 0;
+            return 0;
         };
-        let valueFields = el.find('.text-value, .bar-value, .gauge-value, .stack-val');
-        
-        if (data.showValue === false) {
-            valueFields.css('display', 'none'); // Skrýt
-        } else {
-            valueFields.css('display', ''); // Zobrazit (obnovit default)
+
+        // --- NUTRI STYLE ---
+        if (data.style === 'nutri') {
+            let slots = data.slots || [];
+            let total = 0;
+            let count = 0;
+
+            for(let i=0; i<4; i++) {
+                let varName = slots[i];
+                let val = 0;
+                
+                if (varName && statusData[varName] !== undefined) {
+                    val = getNumericValue(statusData[varName], maxO);
+                    total += val;
+                    count++;
+                }
+
+                // Výpočet procenta pro tento kruh
+                let pct = Math.min(Math.max((val - min) / (maxO - min), 0), 1);
+                
+                // SVG Path Math
+                let pathEl = document.getElementById(`${key}_fill_${i}`);
+                if (pathEl) {
+                    let length = pathEl.getTotalLength();
+                    // offset = length - (percentage * length)
+                    let offset = length - (pct * length);
+                    pathEl.style.strokeDasharray = `${length} ${length}`;
+                    pathEl.style.strokeDashoffset = offset;
+                }
+            }
+
+            // Výpočet průměru (AVG)
+            let avg = count > 0 ? Math.round(total / count) : 0;
+            
+            if (data.showValue !== false) {
+                el.find('.nutri-val').text(avg);
+                el.find('.nutri-center').show();
+            } else {
+                el.find('.nutri-center').hide();
+            }
+            continue;
         }
+
         // --- STACK STYLE ---
+        let valueFields = el.find('.text-value, .bar-value, .gauge-value, .stack-val');
+        if (data.showValue === false) valueFields.hide(); else valueFields.show();
+
         if (data.style === 'stack') {
             el.find('.stack-row').each(function() {
                 let varName = $(this).data('var');
                 let rawVal = statusData[varName];
-                
-                // Zde použijeme logiku: True = plný řádek, False = prázdný
                 let numVal = getNumericValue(rawVal, maxO);
                 let pct = Math.min(Math.max((numVal - min) / (maxO - min), 0), 1);
-                
                 $(this).find('.stack-fill').css('width', (pct * 100) + '%');
-                
-                // Textová hodnota ve stacku
                 let textVal = Math.round(numVal);
                 if (typeof rawVal === 'boolean') textVal = rawVal ? "ON" : "OFF";
-                
                 $(this).find('.stack-val').text(textVal);
             });
             continue;
         }
 
-        // Načtení hlavní hodnoty
+        // --- SINGLE / DUAL / GAUGE / TEXT ---
         let valOuter = statusData[data.srcOuter];
 
-        // --- TEXT STYLE ---
         if (data.style === 'text') {
             let displayVal;
-
-            if (typeof valOuter === 'boolean') {
-                // Binární hodnota -> ON / OFF
-                displayVal = valOuter ? "ON" : "OFF";
-            } 
+            if (typeof valOuter === 'boolean') displayVal = valOuter ? "ON" : "OFF";
             else if (typeof valOuter === 'number') {
-                // Číslo -> zaokrouhlit
                 displayVal = Math.round(valOuter);
-                
-                // Dual mode logika pro text
                 if(data.mode === 'dual') {
                     let valInner = statusData[data.srcInner];
-                    if (typeof valInner === 'number') {
-                        displayVal = `${displayVal} / ${Math.round(valInner)}`;
-                    } else if (typeof valInner === 'boolean') {
-                        displayVal = `${displayVal} / ${valInner ? "ON" : "OFF"}`;
-                    }
+                    if (typeof valInner === 'number') displayVal = `${displayVal} / ${Math.round(valInner)}`;
+                    else if (typeof valInner === 'boolean') displayVal = `${displayVal} / ${valInner ? "ON" : "OFF"}`;
                 }
-            } 
-            else {
-                // String nebo jiné -> zobrazit jak je
-                displayVal = (valOuter !== undefined && valOuter !== null) ? valOuter : "";
-            }
-
+            } else displayVal = (valOuter !== undefined && valOuter !== null) ? valOuter : "";
             el.find('.text-value').text(displayVal);
             continue;
         }
 
-        // --- GRAFICKÉ STYLY (Bar, Gauge, Circle) ---
-        // Převedeme vstup na číslo (Boolean true se stane MaxOuter, false se stane 0)
         let numValOuter = getNumericValue(valOuter, maxO);
         let pctOuter = Math.min(Math.max((numValOuter - min) / (maxO - min), 0), 1);
 
-        // GAUGE
         if (data.style === 'gauge') {
             let deg = (pctOuter * 180) - 90; 
             el.find('.gauge-needle').css('transform', `translateX(-50%) rotate(${deg}deg)`);
-            // Pokud je to boolean, nechceme psát číslo max hodnoty, ale ON/OFF
             let textDisplay = (typeof valOuter === 'boolean') ? (valOuter ? "ON" : "OFF") : Math.round(numValOuter);
             el.find('.gauge-value').text(textDisplay);
             continue;
         }
 
-        // BAR
         if (data.style === 'bar') {
             el.find('.bar-fill').css('width', (pctOuter * 100) + '%');
             let textDisplay = (typeof valOuter === 'boolean') ? (valOuter ? "ON" : "OFF") : Math.round(numValOuter);
@@ -306,23 +355,16 @@ function updateValues(statusData) {
             continue;
         }
 
-        // CIRCLE (Default)
         let outerEl = el.find('.ring-outer');
-        if (outerEl.data('circle-progress')) {
-            outerEl.circleProgress('value', pctOuter);
-        }
+        if (outerEl.data('circle-progress')) outerEl.circleProgress('value', pctOuter);
 
         if (data.mode === 'dual') {
             let valInner = statusData[data.srcInner];
             let maxI = data.maxInner || 100;
-            // I pro vnitřní kruh platí True=100%, False=0%
             let numValInner = getNumericValue(valInner, maxI);
             let pctInner = Math.min(Math.max((numValInner - min) / (maxI - min), 0), 1);
-
             let innerEl = el.find('.ring-inner');
-            if (innerEl.data('circle-progress')) {
-                innerEl.circleProgress('value', pctInner);
-            }
+            if (innerEl.data('circle-progress')) innerEl.circleProgress('value', pctInner);
         }
     }
 }
@@ -334,11 +376,9 @@ function populateVariableSelects(selectedOuter, selectedInner, slots) {
         opts += `<option value="${v}">${v}</option>`;
     });
 
-    // Pro standardní inputy
     $('#input-src-outer').html(opts).val(selectedOuter);
     $('#input-src-inner').html(opts).val(selectedInner);
 
-    // Pro Stack inputy (5 slotů)
     $('.stack-selector').html(opts);
     if(slots && Array.isArray(slots)) {
         for(let i=0; i<5; i++) {
@@ -369,7 +409,6 @@ function openModal(key) {
     $('#input-scale').val(data.scale);
     $('#scale-val').text(data.scale);
     $('#input-show-value').prop('checked', data.showValue !== false);
-
     $('#input-enabled').prop('checked', data.enabled);
     
     toggleModalFields(data.mode);
@@ -378,8 +417,8 @@ function openModal(key) {
 }
 
 function toggleModalStyleFields(style) {
-    // Pokud je stack, skryjeme standardní source inputy a zobrazíme multi-sloty
-    if (style === 'stack') {
+    // Pro styly, které vyžadují více slotů (Stack nebo Nutri)
+    if (style === 'stack' || style === 'nutri') {
         $('.standard-inputs').hide();
         $('#stack-inputs').removeClass('hidden');
         $('#input-mode').val('single').prop('disabled', true);
@@ -404,12 +443,10 @@ function saveModal() {
     indicators[k].style = $('#input-style').val();
     indicators[k].mode = $('#input-mode').val();
     
-    // Uložení standardních zdrojů
     indicators[k].srcOuter = $('#input-src-outer').val();
     indicators[k].srcInner = $('#input-src-inner').val();
 
-    // Uložení Stack slotů
-    if (indicators[k].style === 'stack') {
+    if (indicators[k].style === 'stack' || indicators[k].style === 'nutri') {
         let newSlots = [];
         for(let i=1; i<=5; i++) {
             let val = $(`#stack-${i}`).val();
@@ -465,89 +502,43 @@ function closeEditMode() { saveSettings(); $.post('https://' + GetParentResource
 function saveSettings() { localStorage.setItem('redm_hud_v7', JSON.stringify(indicators)); $.post('https://' + GetParentResourceName() + '/saveSettings', JSON.stringify(indicators)); }
 function loadSettings() { let saved = localStorage.getItem('redm_hud_v7'); if (saved) { let parsed = JSON.parse(saved); $.extend(true, indicators, defaultSettings, parsed); } }
 
-// --- NOVÉ FUNKCE PRO PŘIDÁVÁNÍ A MAZÁNÍ ---
-
 function addNewElement() {
-    // Vygenerujeme unikátní ID
     let newId = "custom_" + Math.floor(Math.random() * 100000);
-    
-    // Vytvoříme defaultní data pro nový element
     indicators[newId] = {
-        label: "NOVÝ", 
-        icon: "fa-solid fa-star", 
-        style: "circle", 
-        mode: "single",
-        srcOuter: "", // Uživatel si musí vybrat
-        srcInner: "",
-        colorOuter: "#ffffff", 
-        colorInner: "#ffffff", 
-        colorBg: "rgba(0,0,0,0.5)", 
-        min: 0, maxOuter: 100, maxInner: 100, 
-        speed: 400, scale: 1.0, 
-        showValue: true, // <--- PŘIDAT TOTO (Defaultně zapnuto)
-        x: 50, y: 50, // Střed obrazovky
-        enabled: true 
+        label: "NOVÝ", icon: "fa-solid fa-star", style: "circle", mode: "single",
+        srcOuter: "", srcInner: "", colorOuter: "#ffffff", colorInner: "#ffffff", 
+        colorBg: "rgba(0,0,0,0.5)", min: 0, maxOuter: 100, maxInner: 100, 
+        speed: 400, scale: 1.0, showValue: true, x: 50, y: 50, enabled: true 
     };
-
     renderHud();
-    
-    // Hned otevřeme nastavení tohoto nového prvku
     openModal(newId);
     showNotification("Nový element přidán");
 }
-
-function deleteElement() {
-    if (!currentEditingKey) return;
-    
-    // Ověření (volitelné, pro jednoduchost rovnou mažu)
-    delete indicators[currentEditingKey];
-    
-    closeModal();
-    renderHud();
-    showNotification("Element odstraněn", true); // true = červená notifikace
+function deleteElement() { if (!currentEditingKey) return; delete indicators[currentEditingKey]; closeModal(); renderHud(); showNotification("Element odstraněn", true); }
+function makeDraggable(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; var header = elmnt.querySelector(".drag-handle");
+    if (header) { header.onmousedown = dragMouseDown; } else { elmnt.onmousedown = dragMouseDown; }
+    function dragMouseDown(e) { e = e || window.event; e.preventDefault(); pos3 = e.clientX; pos4 = e.clientY; document.onmouseup = closeDragElement; document.onmousemove = elementDrag; }
+    function elementDrag(e) { e = e || window.event; e.preventDefault(); pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY; pos3 = e.clientX; pos4 = e.clientY; elmnt.style.transform = "none"; elmnt.style.top = (elmnt.offsetTop - pos2) + "px"; elmnt.style.left = (elmnt.offsetLeft - pos1) + "px"; }
+    function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
 }
 
-// --- LOGIKA POSOUVÁNÍ EDIT OKNA ---
+// --- MATH HELPERS PRO SVG ---
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+    };
+}
 
-function makeDraggable(elmnt) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    // Hledáme header uvnitř elementu (.drag-handle)
-    var header = elmnt.querySelector(".drag-handle");
-    
-    if (header) {
-        header.onmousedown = dragMouseDown;
-    } else {
-        elmnt.onmousedown = dragMouseDown;
-    }
-
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // Získat pozici kurzoru při startu
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // Spočítat novou pozici
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        
-        // Nastavit novou pozici elementu
-        // Odstraníme transform, aby se to nepralo s top/left
-        elmnt.style.transform = "none"; 
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    }
-
-    function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
+function describeArc(x, y, radius, startAngle, endAngle) {
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+        "M", start.x, start.y, 
+        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+    ].join(" ");
+    return d;
 }
