@@ -5,143 +5,165 @@ body {
     user-select: none; font-family: 'Roboto Condensed', sans-serif;
 }
 
-#hud-container { width: 100vw; height: 100vh; position: relative; }
+#hud-container { width: 100vw; height: 100vh; position: relative; z-index: 10; }
 
-/* HUD ELEMENTY */
+/* --- GRID LAYER --- */
+#grid-layer {
+    position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 5; /* Pod HUDem, ale viditelné */
+    /* Vytvoření mřížky pomocí CSS gradientů (40px čtverce) */
+    background-size: 40px 40px;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    pointer-events: none; /* Kliká se skrz */
+}
+#grid-layer.hidden { display: none; }
+
+/* --- HUD ELEMENTY --- */
 .hud-element {
     position: absolute; transform-origin: top left;
     cursor: default; display: flex; align-items: center; justify-content: center;
     transition: opacity 0.2s;
 }
-
 .editable { outline: 2px dashed rgba(255, 255, 0, 0.7); cursor: grab; z-index: 1000; }
 .editable:hover { outline: 2px solid yellow; background-color: rgba(255, 255, 0, 0.1); }
 
-/* STYL: TEXT */
+/* STYL: TEXT ONLY */
 .style-text {
-    font-size: 18px; font-weight: bold;
-    text-shadow: 1px 1px 2px black; padding: 5px;
+    font-size: 16px; font-weight: bold; text-shadow: 1px 1px 2px black; 
+    padding: 5px 10px; background: rgba(0, 0, 0, 0.6); 
+    border-radius: 4px; display: flex; align-items: center; gap: 8px; white-space: nowrap;
 }
+.style-text .hud-icon { font-size: 18px; margin-right: 5px; }
 
-/* STYL: DUAL CIRCLE (Concentric) */
+/* STYL: DUAL CIRCLE */
 .style-circle {
-    position: relative;
-    width: 70px;
-    height: 70px;
-    /* Flexbox centruje pouze text/ikonu uvnitř */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative; width: 70px; height: 70px;
+    display: flex; justify-content: center; align-items: center;
 }
-
-/* Wrapper pro Canvasy - absolutní centrování */
 .ring-outer, .ring-inner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    padding: 0;
-    margin: 0;
-    line-height: 0; /* Odstraní případné mezery pod canvasem */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; top: 50%; left: 50%; padding: 0; margin: 0; line-height: 0;
+    display: flex; align-items: center; justify-content: center;
 }
+.ring-outer { transform: translate(-50%, -50%); z-index: 1; width: 70px; height: 70px; }
+.ring-inner { transform: translate(-50%, -50%) scale(0.7); z-index: 2; width: 70px; height: 70px; }
+.ring-outer canvas, .ring-inner canvas { display: block; }
 
-/* Vnější kruh: Pouze posun do středu */
-.ring-outer {
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    width: 70px; /* Fixní velikost wrapperu */
-    height: 70px;
-}
-
-/* Vnitřní kruh: Posun do středu + zmenšení */
-.ring-inner {
-    transform: translate(-50%, -50%) scale(0.7); /* Scale 0.7 zmenší kruh */
-    z-index: 2;
-    width: 70px;
-    height: 70px;
-}
-
-/* Canvas uvnitř wrapperu */
-.ring-outer canvas, .ring-inner canvas {
-    display: block; /* Odstraní whitespace */
-}
-
-/* Obsah uvnitř (ikona/text) */
 .style-circle .circle-content {
-    position: relative; 
-    z-index: 10; /* Musí být nejvýš */
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center;
-    /* Barva textu zůstane bílá, barvu ikony řešíme v JS */
-    color: rgba(255, 255, 255, 0.9); 
-    text-shadow: 1px 1px 2px black;
-    line-height: 1;
-    pointer-events: none;
+    position: relative; z-index: 10; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 2px black; line-height: 1; pointer-events: none;
 }
+.style-circle .hud-icon { font-size: 18px; margin-bottom: 2px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
+.value-text { font-size: 11px; font-weight: bold; white-space: nowrap; }
 
-.hud-icon { 
-    font-size: 18px; /* Trochu větší ikona */
-    margin-bottom: 2px; 
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); /* Stín ikony pro čitelnost */
-}
-
-.value-text { 
-    font-size: 11px; 
-    font-weight: bold; 
-    white-space: nowrap; 
-}
-
-/* UI OVERLAY & MODAL */
+/* --- UI OVERLAY --- */
 #edit-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.4); z-index: 5000;
     pointer-events: none; display: flex; justify-content: center; padding-top: 50px;
 }
-
 #edit-overlay .edit-info {
     pointer-events: auto; background: rgba(0,0,0,0.9); color: white;
     padding: 20px; text-align: center; border-radius: 8px;
     border: 2px solid #d9a838; height: fit-content;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 5001;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 5001; min-width: 300px;
 }
 
-.save-btn {
-    background: #d9a838; border: none; padding: 10px 20px;
-    font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px;
-    color: black; border-radius: 4px; transition: background 0.2s;
+/* GRID CONTROLS */
+.grid-controls {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #333;
+    font-size: 14px; font-weight: bold; color: #ccc;
 }
+/* Toggle Switch Style */
+.grid-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+.grid-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #555; transition: .4s; border-radius: 20px;
+}
+.slider:before {
+    position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+    background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: #38d960; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Overlay buttons */
+.overlay-buttons { display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-top: 15px; width: 100%; }
+.io-group { display: flex; gap: 5px; }
+.save-btn { background: #d9a838; border: none; padding: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: black; border-radius: 4px; width: 100%; }
 .save-btn:hover { background: #fff; }
+.reset-btn { background: #d93838; border: none; padding: 8px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; border-radius: 4px; width: 100%; }
+.reset-btn:hover { background: #ff6666; }
+.io-btn { background: #388bd9; border: none; padding: 8px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; border-radius: 4px; flex: 1; }
+.io-btn:hover { background: #66aaff; }
 
-.modal {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); z-index: 6000;
-    display: flex; justify-content: center; align-items: center;
-    pointer-events: auto;
-}
+/* --- MODALS --- */
+.modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; display: flex; justify-content: center; align-items: center; pointer-events: auto; }
 .hidden { display: none !important; }
-
-.modal-content {
-    background: #1a1a1a; color: white; padding: 20px; border-radius: 8px;
-    width: 320px; border: 2px solid #555; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-}
+.modal-content { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; width: 320px; border: 2px solid #555; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
 .modal-content h2 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.io-content { width: 500px; background: #151515; }
+#io-textarea { width: 100%; height: 200px; background: #0a0a0a; color: #00ff00; border: 1px solid #333; font-family: monospace; font-size: 11px; padding: 10px; resize: none; box-sizing: border-box; outline: none; }
 
 .form-group { margin-bottom: 15px; }
-.form-row { display: flex; gap: 10px; } /* Pro Min/Max vedle sebe */
+.form-row { display: flex; gap: 10px; }
 .form-group.half { flex: 1; }
-
 .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #ccc; }
 .form-group input[type="color"] { width: 100%; height: 40px; border: none; cursor: pointer; }
-.form-group select, .form-group input[type="number"] {
-    width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #555; box-sizing: border-box;
-}
+.form-group select, .form-group input[type="text"], .form-group input[type="number"] { width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #555; box-sizing: border-box; }
 .form-group input[type="range"] { width: 100%; }
-
+.checkbox label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 .modal-actions button { flex: 1; padding: 10px; cursor: pointer; border: none; font-weight: bold; border-radius: 4px; }
 .modal-actions button:first-child { background: #38d960; color: black; }
 .modal-actions button.cancel { background: #d93838; color: white; }
+
+/* --- NOTIFICATION TOAST --- */
+.notification {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7000; /* Musí být nad vším (modaly mají 6000) */
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #38d960; /* Default zelená */
+    border-radius: 6px;
+    padding: 15px 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 1;
+}
+
+.notification.hidden {
+    opacity: 0;
+    top: -50px; /* Vyjede nahoru mimo obrazovku */
+    pointer-events: none;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.notification i {
+    font-size: 20px;
+    color: #38d960;
+}
+
+/* Styl pro chybu */
+.notification.error {
+    border-color: #d93838;
+}
+.notification.error i {
+    color: #d93838;
+}

@@ -18,6 +18,12 @@ RegisterNUICallback('saveSettings', function(data, cb)
     SetResourceKvp('hud_settings', jsonString)
     cb('ok')
 end)
+-- NOVÝ CALLBACK PRO RESET
+RegisterNUICallback('resetSettings', function(data, cb)
+    DeleteResourceKvp('hud_settings') -- Smaže data z KVP
+    cb('ok')
+end)
+
 
 CreateThread(function()
     Wait(1000)
@@ -31,7 +37,7 @@ CreateThread(function()
     while true do
         Wait(200)
         local stats = exports.aprts_metabolism:getMetabolism()
-        print(json.encode(stats, { indent = true }))
+        -- print(json.encode(stats, { indent = true }))
         local ped = PlayerPedId()
         
         -- 1. ZDRAVÍ (Health)
@@ -53,6 +59,7 @@ CreateThread(function()
         stats.health_inner = healthInner
         stats.stamina_outer = softStamina
         stats.stamina_inner = stamina
+        stats.temp = math.floor(GetTemperatureAtCoords(GetEntityCoords(ped)))
         SendNUIMessage({
             type = "updateHUD",
             status = stats
