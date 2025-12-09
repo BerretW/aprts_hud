@@ -13,4 +13,4 @@ files {
     'html/script.js'
 }
 
-client_script 'client.lua'
+client_scripts { 'client.lua', 'config.lua' }

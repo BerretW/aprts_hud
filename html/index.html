@@ -8,12 +8,9 @@
     <title>RedM HUD</title>
 </head>
 <body>
-    <!-- Vrstva pro mřížku -->
     <div id="grid-layer" class="hidden"></div>
-
     <div id="hud-container"></div>
 
-    <!-- NOVÉ: Notifikace (úspěch/chyba) -->
     <div id="custom-notification" class="notification hidden">
         <div class="notification-content">
             <i id="notif-icon" class="fa-solid fa-circle-check"></i>
@@ -21,11 +18,15 @@
         </div>
     </div>
 
-    <!-- Hlavní overlay pro Edit Mode -->
     <div id="edit-overlay" style="display: none;">
-        <div class="edit-info">
-            <h1>EDIT MODE</h1>
-            <p>Levé tl. myši: Přesunout | Kliknutí: Nastavení elementu</p>
+        <!-- Přidáno id="edit-window" pro JS -->
+        <div id="edit-window" class="edit-info">
+            <!-- Toto je část, za kterou se bude tahat -->
+            <div class="drag-handle">
+                <h1><i class="fa-solid fa-arrows-up-down-left-right"></i> EDIT MODE</h1>
+            </div>
+            
+            <p>Levé tl. myši: Přesunout HUD | Kliknutí: Nastavení</p>
             
             <div class="grid-controls">
                 <label class="grid-switch">
@@ -36,42 +37,114 @@
             </div>
 
             <div class="overlay-buttons">
+                <!-- NOVÉ TLAČÍTKO PŘIDAT -->
+                <button class="add-btn" onclick="addNewElement()"><i class="fa-solid fa-plus"></i> PŘIDAT ELEMENT</button>
+                
                 <button class="save-btn" onclick="closeEditMode()">ULOŽIT A ZAVŘÍT</button>
                 <div class="io-group">
                     <button class="io-btn" onclick="exportConfig()"><i class="fa-solid fa-download"></i> EXPORT</button>
                     <button class="io-btn" onclick="importConfig()"><i class="fa-solid fa-upload"></i> IMPORT</button>
                 </div>
-                <button class="reset-btn" onclick="resetSettings()">RESETOVAT</button>
+                <button class="reset-btn" onclick="resetSettings()">RESETOVAT VŠE</button>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal (beze změny obsahu) -->
+    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
-            <h2>Nastavení Ukazatele</h2>
-            <!-- ... obsah formuláře ... -->
-            <!-- Pro stručnost zde vypisuji jen strukturu, obsah je stejný jako minule -->
-            <div class="form-row">
-                <div class="form-group half"><label>Vzhled</label><select id="input-style"><option value="circle">Kruh</option><option value="text">Text</option></select></div>
-                <div class="form-group half"><label>Typ</label><select id="input-mode"><option value="single">Single</option><option value="dual">Dual</option></select></div>
+            <h2>Nastavení Elementu</h2>
+            
+            <div class="form-group">
+                <label>Název (Label)</label>
+                <input type="text" id="input-label" placeholder="Např. Jídlo">
             </div>
-            <div class="form-row"><div class="form-group half"><label>Zdroj Outer</label><input type="text" id="input-src-outer"></div><div class="form-group half dual-only"><label>Zdroj Inner</label><input type="text" id="input-src-inner"></div></div>
-            <div class="form-row"><div class="form-group half"><label>Max Outer</label><input type="number" id="input-max-outer"></div><div class="form-group half dual-only"><label>Max Inner</label><input type="number" id="input-max-inner"></div></div>
-            <div class="form-row"><div class="form-group half"><label>Barva Outer</label><input type="color" id="input-color-outer"></div><div class="form-group half dual-only"><label>Barva Inner</label><input type="color" id="input-color-inner"></div></div>
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label>Vzhled</label>
+                    <select id="input-style">
+                        <option value="circle">Kruh</option>
+                        <option value="text">Text</option>
+                        <option value="bar">Bar (Lišta)</option>
+                        <option value="gauge">Rafička (Gauge)</option> <!-- NOVÉ -->
+                        <option value="stack">Multi-Stack (1-5)</option> <!-- NOVÉ -->
+                    </select>
+                </div>
+                <div class="form-group half">
+                    <label>Typ</label>
+                    <select id="input-mode">
+                        <option value="single">Single</option>
+                        <option value="dual">Dual</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- STANDARDNÍ INPUTY (Schováme pro Stack) -->
+            <div class="form-row standard-inputs">
+                <div class="form-group half">
+                    <label>Zdroj Outer</label>
+                    <select id="input-src-outer"></select> 
+                </div>
+                <div class="form-group half dual-only">
+                    <label>Zdroj Inner</label>
+                    <select id="input-src-inner"></select>
+                </div>
+            </div>
+
+            <!-- NOVÉ: INPUTY PRO STACK (Zobrazí se jen pro stack) -->
+            <div id="stack-inputs" class="hidden" style="border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                <label style="font-size: 12px; color: #888; display:block; margin-bottom:5px;">MULTI SLOTY (Vyber proměnné)</label>
+                <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-1"></select></div>
+                <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-2"></select></div>
+                <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-3"></select></div>
+                <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-4"></select></div>
+                <div class="form-group" style="margin-bottom: 0px;"><select class="stack-selector" id="stack-5"></select></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half"><label>Max Outer</label><input type="number" id="input-max-outer"></div>
+                <div class="form-group half dual-only"><label>Max Inner</label><input type="number" id="input-max-inner"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half"><label>Barva Outer</label><input type="color" id="input-color-outer"></div>
+                <div class="form-group half dual-only"><label>Barva Inner</label><input type="color" id="input-color-inner"></div>
+            </div>
+
             <div class="form-group"><label>Pozadí</label><input type="color" id="input-color-bg"></div>
-            <div class="form-row"><div class="form-group half"><label>Ikona</label><input type="text" id="input-icon"></div><div class="form-group half"><label>Min</label><input type="number" id="input-min"></div></div>
-            <div class="form-group"><label>Velikost: <span id="scale-val"></span></label><input type="range" id="input-scale" min="0.5" max="2.0" step="0.1"></div>
-            <div class="form-group checkbox"><label><input type="checkbox" id="input-enabled"> Zapnuto</label></div>
-            <div class="modal-actions"><button onclick="saveModal()">Použít</button><button class="cancel" onclick="closeModal()">Zrušit</button></div>
+
+            <div class="form-row">
+                <div class="form-group half"><label>Ikona</label><input type="text" id="input-icon"></div>
+                <div class="form-group half"><label>Minimální hodnota</label><input type="number" id="input-min"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Velikost: <span id="scale-val"></span></label>
+                <input type="range" id="input-scale" min="0.5" max="3.0" step="0.1">
+            </div>
+
+            <div class="form-row"> <!-- Uděláme to jako řádek, aby byly vedle sebe -->
+                <div class="form-group checkbox half">
+                    <label><input type="checkbox" id="input-show-value"> Zobrazit text hodnoty</label>
+                </div>
+                <div class="form-group checkbox half">
+                    <label><input type="checkbox" id="input-enabled"> Zapnuto</label>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="saveModal()">Použít</button>
+                <button class="cancel" onclick="closeModal()">Zrušit</button>
+            </div>
+            <button class="delete-btn" onclick="deleteElement()" style="margin-top: 10px; background: #8a2be2;">Odstranit Element</button>
         </div>
     </div>
 
-    <!-- Import/Export Modal -->
+    <!-- IO MODAL (beze změny) -->
     <div id="io-modal" class="modal hidden">
         <div class="modal-content io-content">
             <h2 id="io-title">Export Nastavení</h2>
-            <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Zkopíruj kód níže pro sdílení, nebo sem vlož kód.</p>
             <textarea id="io-textarea" placeholder="Sem vlož JSON kód..."></textarea>
             <div class="modal-actions">
                 <button id="btn-copy" onclick="copyToClipboard()">Zkopírovat</button>
