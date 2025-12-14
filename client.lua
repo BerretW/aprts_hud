@@ -1,5 +1,5 @@
 local isEditMode = false
-
+local UIShow = false
 RegisterCommand('UIEdit', function()
     isEditMode = not isEditMode
     SetNuiFocus(isEditMode, isEditMode)
@@ -29,6 +29,17 @@ RegisterNUICallback('resetSettings', function(data, cb)
     DeleteResourceKvp('hud_settings') -- Smaže data z KVP
     cb('ok')
 end)
+local function waitForCharacter()
+    while not LocalPlayer do
+        Citizen.Wait(100)
+    end
+    while not LocalPlayer.state do
+        Citizen.Wait(100)
+    end
+    while not LocalPlayer.state.Character do
+        Citizen.Wait(100)
+    end
+end
 
 local function GetNameOfZone(coords)
     local name = ""
@@ -108,6 +119,16 @@ function GetHorseHealthAndStaminaBars(pedPlayer)
 
     return isHorse, horseHealth, staminaInner, staminaOuter, isGoldStamina
 end
+function GetPedAttribute(ped, index)
+    local Atribute = {}
+    Atribute.BaseRank = GetAttributeBaseRank(ped, index)
+    Atribute.Rank = GetAttributeRank(ped, index)
+    Atribute.BonusRank = GetAttributeBonusRank(ped, index)
+    Atribute.maxRank = GetMaxAttributeRank(ped, index)
+    Atribute.Points = GetAttributePoints(ped, index)
+    Atribute.maxPoints = GetMaxAttributePoints(ped, index)
+    return Atribute
+end
 
 CreateThread(function()
     Wait(1000)
@@ -118,12 +139,36 @@ CreateThread(function()
             settings = json.decode(savedSettings)
         })
     end
+    SendNUIMessage({
+        type = "toggleHUD",
+        enable = UIShow
+    })
+    waitForCharacter()
+    print("HUD: Charakter načten, spouštím aktualizaci HUD...")
+    UIShow = true
+    SendNUIMessage({
+        type = "toggleHUD",
+        enable = UIShow
+    })
 end)
+
+local bodyTemp = 0.0
 local stats = {}
+local skills = {}
 CreateThread(function()
+    waitForCharacter()
     while true do
         Wait(600)
-        stats = exports.aprts_metabolism:getMetabolism()
+
+        local success, getstats = pcall(function()
+            return exports.aprts_metabolism:getMetabolism()
+        end)
+
+        if success and getstats then
+            stats = getstats
+            stats.state = exports.aprts_metabolism:getState()
+        end
+        success = nil
         -- print(json.encode(stats, { indent = true }))
         local ped = PlayerPedId()
         local playerPos = GetEntityCoords(ped)
@@ -138,20 +183,43 @@ CreateThread(function()
         -- 2. STAMINA
         local stamina = GetAttributeCoreValue(PlayerPedId(), 1)
         local softStamina = math.floor(GetPedStamina(PlayerPedId()))
-
+        local tool = nil
+        local toolClass = nil
+        local success, tool = pcall(function()
+            return exports.aprts_tools:GetEquipedTool()
+        end)
+        if success and tool then
+            stats.tool = tool
+            stats.tool_class = exports.aprts_tools:GetEquipedToolClass()
+        else
+            stats.tool = "none"
+        end
         -- 3. DEAD EYE (Volitelné, pokud bys chtěl)
         -- local deadEyeOuter = Citizen.InvokeNative(0xD53343AA4FB2200D, PlayerId())
         -- local deadEyeInner = Citizen.InvokeNative(0x36731AC041289BB1, ped, 2)
 
         -- 4. METABOLISMUS (Hunger/Thirst) - Zde doplň své exporty
         -- 5. další užitečnosti
-        local success, bodyTemp = pcall(function()
+        success, bodyTemp = pcall(function()
             return exports.aprts_medicalAtention:getBodyTemperature()
         end)
         if success and bodyTemp then
             stats.body_temp = math.floor(bodyTemp)
         else
             stats.body_temp = 36 -- Defaultní hodnota, pokud export není dostupný
+        end
+
+        success, skills = pcall(function()
+            return exports.westhaven_skill:getMySkills()
+        end)
+        if success and skills then
+            -- stats.skills = skills
+            for skillName, skillData in pairs(skills) do
+                stats["skill_" .. skillName .. "_level"] = skillData.level
+                stats["skill_" .. skillName .. "_experience"] = skillData.experience
+            end
+        else
+            stats.skills = {} -- Defaultní hodnota, pokud export není dostupný
         end
         local weaponObj = GetPedWeaponObject(ped, true)
         local hasWapon, weaponHash = GetCurrentPedWeapon(ped, true)
@@ -188,14 +256,18 @@ CreateThread(function()
             stats.mount_stamina_inner = math.floor(stamInner * 100)
             stats.mount_stamina_outer = math.floor(stamOuter * 100)
             stats.mount_isGoldStamina = isGold
+            stats.mount_hunger = GetPedAttribute(GetMount(ped), 1).Points
         else
             stats.on_mount = false
             stats.mount_healthOuter = 0
             stats.mount_stamina_inner = 0.0
             stats.mount_stamina_outer = 0.0
             stats.mount_isGoldStamina = false
+            stats.mount_hunger = 0
         end
-
+        stats.money = LocalPlayer.state.Character.Money or 0
+        stats.gold = LocalPlayer.state.Character.Gold or 0
+        stats.job = LocalPlayer.state.Character.Job or "Unemployed"
         stats.time = GetGameTimer()
         stats.dayOdWeek = GetClockDayOfWeek()
         stats.hour = GetClockHours()
@@ -207,6 +279,7 @@ CreateThread(function()
         stats.health_inner = healthInner
         stats.stamina_outer = softStamina
         stats.stamina_inner = stamina
+        stats.id = GetPlayerServerId(PlayerId())
         stats.rain = math.floor(GetRainLevel() * 100)
         stats.snow = math.floor(GetSnowLevel() * 100)
         stats.wet = math.floor(GetPedWetness(PlayerPedId()) * 100)
@@ -221,7 +294,19 @@ CreateThread(function()
     end
 end)
 
-
 RegisterCommand("printStats", function()
-    print(json.encode(stats, { indent = true }))
+    print(json.encode(LocalPlayer.state, {
+        indent = true
+    }))
+    print(json.encode(stats, {
+        indent = true
+    }))
+end)
+
+RegisterCommand("toggleHUD", function()
+    UIShow = not UIShow
+    SendNUIMessage({
+        type = "toggleHUD",
+        enable = UIShow
+    })
 end)
