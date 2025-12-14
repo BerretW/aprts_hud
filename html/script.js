@@ -17,14 +17,14 @@ const defaultSettings = {
         label: "JÍDLO", icon: "fa-solid fa-drumstick-bite", style: "bar", mode: "single",
         srcOuter: "hunger", srcInner: null,
         colorOuter: "#38d960", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
-        min: 0, maxOuter: 100, maxInner: 100,
+        min: 0, maxOuter: 1000, maxInner: 1000,
         speed: 800, scale: 1.0, x: 18, y: 88, enabled: true 
     },
     thirst: { 
         label: "PITÍ", icon: "fa-solid fa-droplet", style: "bar", mode: "single",
         srcOuter: "thirst", srcInner: null,
         colorOuter: "#388bd9", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
-        min: 0, maxOuter: 100, maxInner: 100,
+        min: 0, maxOuter: 1000, maxInner: 1000,
         speed: 800, scale: 1.0, x: 18, y: 93, enabled: true 
     },
     // Ukázka výchozího nastavení pro NUTRI
@@ -53,6 +53,27 @@ $(document).ready(function() {
     loadSettings();
     renderHud();
     
+    // --- PŘIDÁNO: Inicializace Iconpickeru ---
+    $('#input-icon').iconpicker({
+        title: 'Vyber ikonu',
+        placement: 'bottomRight',
+        hideOnSelect: true,
+        templates: {
+            search: '<input type="search" class="form-control iconpicker-search" placeholder="Hledat..." />'
+        }
+    });
+
+    // Fix: Iconpicker vkládá jen 'fa-heart', ale my chceme 'fa-solid fa-heart'. 
+    // Pokud chceš automaticky přidávat 'fa-solid', odkomentuj toto:
+    $('#input-icon').on('iconpickerSelected', function(e) {
+        let pickerValue = e.iconpickerValue;
+        if (!pickerValue.includes('fa-')) {
+             $('#input-icon').val('fa-solid ' + pickerValue);
+        }
+    });
+    // Prozatím to necháme defaultní, protože picker v3.2.0 vrací "fa fa-xxx" nebo "fab fa-xxx"
+    // a FontAwesome 6 má zpětnou kompatibilitu.
+
     $('#input-scale').on('input', function() { $('#scale-val').text($(this).val()); });
     $('#input-mode').on('change', function() { toggleModalFields($(this).val()); });
     $('#input-style').on('change', function() { toggleModalStyleFields($(this).val()); });
@@ -79,6 +100,10 @@ $(document).ready(function() {
                 }
                 renderHud();
             }
+        }
+        else if (data.type === "toggleHUD") {
+            if (data.enable) $('#hud-container').fadeIn(300);
+            else $('#hud-container').fadeOut(300);
         }
     });
     makeDraggable(document.getElementById("edit-window"));

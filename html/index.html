@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PŘIDÁNO: Iconpicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/css/fontawesome-iconpicker.min.css">
     <title>RedM HUD</title>
 </head>
 <body>
@@ -65,7 +68,7 @@
                         <option value="bar">Bar (Lišta)</option>
                         <option value="gauge">Rafička (Gauge)</option>
                         <option value="stack">Multi-Stack (Lišty)</option>
-                        <option value="nutri">Multi-Ring (Nutri)</option> <!-- NOVÉ -->
+                        <option value="nutri">Multi-Ring (Nutri)</option>
                     </select>
                 </div>
                 <div class="form-group half">
@@ -112,7 +115,11 @@
             <div class="form-group"><label>Pozadí</label><input type="color" id="input-color-bg"></div>
 
             <div class="form-row">
-                <div class="form-group half"><label>Ikona</label><input type="text" id="input-icon"></div>
+                <!-- UPRAVENO: Input icon je nyní připraven pro picker -->
+                <div class="form-group half" style="position: relative;">
+                    <label>Ikona</label>
+                    <input type="text" id="input-icon" class="icp icp-auto" data-placement="bottomRight">
+                </div>
                 <div class="form-group half"><label>Minimální hodnota</label><input type="number" id="input-min"></div>
             </div>
 
@@ -153,6 +160,8 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+    <!-- PŘIDÁNO: Iconpicker JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

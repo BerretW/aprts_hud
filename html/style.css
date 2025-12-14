@@ -105,3 +105,47 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
 .notification i { font-size: 20px; color: #38d960; }
 .notification.error { border-color: #d93838; }
 .notification.error i { color: #d93838; }
+
+/* --- ICON PICKER OVERRIDES --- */
+.iconpicker-popover {
+    z-index: 9999 !important; /* Musí být nad modálem (ten má z-index 6000) */
+    background: #1a1a1a !important;
+    border: 2px solid #555 !important;
+    color: white !important;
+}
+
+.iconpicker-popover .popover-title {
+    background: #222 !important;
+    border-bottom: 1px solid #444 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.iconpicker-popover .popover-title input.iconpicker-search {
+    background: #333 !important;
+    border: 1px solid #555 !important;
+    color: white !important;
+}
+
+.iconpicker-popover .popover-footer {
+    background: #222 !important;
+    border-top: 1px solid #444 !important;
+}
+
+.iconpicker-items .iconpicker-item {
+    background: #333 !important;
+    border: 1px solid #444 !important;
+    color: #ccc !important;
+    border-radius: 4px;
+}
+
+.iconpicker-items .iconpicker-item:hover {
+    background: #d9a838 !important; /* Gold hover */
+    color: black !important;
+}
+
+.iconpicker-items .iconpicker-item.iconpicker-selected {
+    background: #38d960 !important; /* Green selected */
+    color: black !important;
+    border-color: #38d960 !important;
+}
