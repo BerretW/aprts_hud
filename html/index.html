@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+
     <!-- Google Material Symbols (Outlined verze) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
-    
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0"
+    />
+
     <title>RedM HUD</title>
-</head>
-<body>
+  </head>
+  <body>
     <div id="grid-layer" class="hidden"></div>
     <div id="hud-container"></div>
 
     <div id="custom-notification" class="notification hidden">
-        <div class="notification-content">
-            <!-- Ikona notifikace (Google) -->
-            <span id="notif-icon" class="material-symbols-outlined">check_circle</span>
-            <span id="notif-text">Nastavení uloženo</span>
-        </div>
+      <div class="notification-content">
+        <!-- Ikona notifikace (Google) -->
+        <span id="notif-icon" class="material-symbols-outlined"
+          >check_circle</span
+        >
+        <span id="notif-text">Nastavení uloženo</span>
+      </div>
     </div>
 
-    <div id="edit-overlay" style="display: none;">
-        <div id="edit-window" class="edit-info">
-            <div class="drag-handle">
-                <h1>
-                    <span class="material-symbols-outlined">open_with</span> EDIT MODE
-                </h1>
-            </div>
-            
-            <p>Levé tl. myši: Přesunout HUD | Kliknutí: Nastavení</p>
-            
-            <div class="grid-controls">
-                <label class="grid-switch">
-                    <input type="checkbox" id="chk-grid" onchange="toggleGrid(this.checked)">
-                    <span class="slider"></span>
-                </label>
-                <span>ZAROVNAT DO MŘÍŽKY</span>
-            </div>
-
-            <div class="overlay-buttons">
-                <button class="add-btn" onclick="addNewElement()">
-                    <span class="material-symbols-outlined icon-btn">add</span> PŘIDAT ELEMENT
-                </button>
-                <button class="save-btn" onclick="closeEditMode()">ULOŽIT A ZAVŘÍT</button>
-                <div class="io-group">
-                    <button class="io-btn" onclick="exportConfig()">
-                        <span class="material-symbols-outlined icon-btn">download</span> EXPORT
-                    </button>
-                    <button class="io-btn" onclick="importConfig()">
-                        <span class="material-symbols-outlined icon-btn">upload</span> IMPORT
-                    </button>
-                </div>
-                <button class="reset-btn" onclick="resetSettings()">RESETOVAT VŠE</button>
-            </div>
+    <div id="edit-overlay" style="display: none">
+      <div id="edit-window" class="edit-info">
+        <div class="drag-handle">
+          <h1>
+            <span class="material-symbols-outlined">open_with</span> EDIT MODE
+          </h1>
         </div>
+
+        <p>Levé tl. myši: Přesunout HUD | Kliknutí: Nastavení</p>
+
+        <div class="grid-controls">
+          <label class="grid-switch">
+            <input
+              type="checkbox"
+              id="chk-grid"
+              onchange="toggleGrid(this.checked)"
+            />
+            <span class="slider"></span>
+          </label>
+          <span>ZAROVNAT DO MŘÍŽKY</span>
+        </div>
+
+        <div class="overlay-buttons">
+          <button class="add-btn" onclick="addNewElement()">
+            <span class="material-symbols-outlined icon-btn">add</span> PŘIDAT
+            ELEMENT
+          </button>
+          <button class="save-btn" onclick="closeEditMode()">
+            ULOŽIT A ZAVŘÍT
+          </button>
+          <div class="io-group">
+            <button class="io-btn" onclick="exportConfig()">
+              <span class="material-symbols-outlined icon-btn">download</span>
+              EXPORT
+            </button>
+            <button class="io-btn" onclick="importConfig()">
+              <span class="material-symbols-outlined icon-btn">upload</span>
+              IMPORT
+            </button>
+          </div>
+          <button class="reset-btn" onclick="resetSettings()">
+            RESETOVAT VŠE
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- SETTINGS MODAL -->
@@ -65,15 +81,17 @@
             
             <div class="form-group">
                 <label>Název (Label)</label>
-                <input type="text" id="input-label" placeholder="Např. Jídlo">
+                <input type="text" id="input-label" placeholder="Např. Quest">
             </div>
 
+            <!-- ZDE BYLA CHYBA: VRACÍME VÝBĚR TYPU (MODE) -->
             <div class="form-row">
                 <div class="form-group half">
                     <label>Vzhled</label>
                     <select id="input-style">
                         <option value="circle">Kruh</option>
-                        <option value="text">Text</option>
+                        <option value="text">Text (Jeden řádek)</option>
+                        <option value="multiline">Text (Více řádků/Quest)</option>
                         <option value="bar">Bar (Lišta)</option>
                         <option value="gauge">Rafička (Gauge)</option>
                         <option value="stack">Multi-Stack (Lišty)</option>
@@ -81,11 +99,29 @@
                     </select>
                 </div>
                 <div class="form-group half">
-                    <label>Typ</label>
+                    <label>Typ (Mode)</label>
                     <select id="input-mode">
-                        <option value="single">Single</option>
-                        <option value="dual">Dual</option>
+                        <option value="single">Single (1 hodnota)</option>
+                        <option value="dual">Dual (2 hodnoty)</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- PODMÍNKA ZOBRAZENÍ (NA SAMOSTATNÉM ŘÁDKU) -->
+            <div class="form-group">
+                <label>Podmínka zobrazení (Variable | Operator | Value)</label>
+                <div style="display: flex; gap: 5px;">
+                    <select id="input-cond-var" style="flex: 2; min-width: 0;"></select>
+                    <select id="input-cond-op" style="width: 65px; flex-shrink: 0; text-align: center;">
+                        <option value="none">--</option>
+                        <option value="==">==</option>
+                        <option value="!=">!=</option>
+                        <option value=">">&gt;</option>
+                        <option value=">=">&gt;=</option>
+                        <option value="<">&lt;</option>
+                        <option value="<=">&lt;=</option>
+                    </select>
+                    <input type="text" id="input-cond-val" placeholder="true/100/text" style="flex: 1; min-width: 0;">
                 </div>
             </div>
 
@@ -96,67 +132,78 @@
                     <select id="input-src-outer"></select> 
                 </div>
                 <div class="form-group half dual-only">
-                    <label>Zdroj Inner</label>
+                    <label>Zdroj Inner (Dual)</label>
                     <select id="input-src-inner"></select>
                 </div>
             </div>
 
-            <!-- MULTI SLOT INPUTY (STACK / NUTRI) -->
+            <!-- MULTI SLOT INPUTY -->
             <div id="stack-inputs" class="hidden" style="border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
-                <label style="font-size: 12px; color: #888; display:block; margin-bottom:5px;">MULTI SLOTY (Vnější -> Vnitřní)</label>
+                <label style="font-size: 12px; color: #888; display:block; margin-bottom:5px;">MULTI SLOTY</label>
                 <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-1"></select></div>
                 <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-2"></select></div>
                 <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-3"></select></div>
                 <div class="form-group" style="margin-bottom: 5px;"><select class="stack-selector" id="stack-4"></select></div>
-                <div class="form-group" style="margin-bottom: 0px;"><select class="stack-selector" id="stack-5"></select></div>
             </div>
 
+            <!-- BARVY S PRŮHLEDNOSTÍ -->
             <div class="form-row">
-                <div class="form-group half"><label>Max Outer</label><input type="number" id="input-max-outer"></div>
-                <div class="form-group half dual-only"><label>Max Inner</label><input type="number" id="input-max-inner"></div>
+                <div class="form-group half">
+                    <label>Barva Hlavní (Outer)</label>
+                    <div class="color-group">
+                        <input type="color" id="input-color-outer">
+                        <input type="range" id="input-opacity-outer" min="0" max="100" value="100">
+                        <span class="opacity-val" id="val-opacity-outer">100%</span>
+                    </div>
+                </div>
+                <div class="form-group half dual-only">
+                    <label>Barva Vedlejší (Inner)</label>
+                    <div class="color-group">
+                        <input type="color" id="input-color-inner">
+                        <input type="range" id="input-opacity-inner" min="0" max="100" value="100">
+                        <span class="opacity-val" id="val-opacity-inner">100%</span>
+                    </div>
+                </div>
             </div>
 
+            <div class="form-group">
+                <label>Barva Pozadí</label>
+                <div class="color-group">
+                    <input type="color" id="input-color-bg">
+                    <input type="range" id="input-opacity-bg" min="0" max="100" value="60">
+                    <span class="opacity-val" id="val-opacity-bg">60%</span>
+                </div>
+            </div>
+
+            <!-- IKONA A SCALE -->
             <div class="form-row">
-                <div class="form-group half"><label>Barva Outer</label><input type="color" id="input-color-outer"></div>
-                <div class="form-group half dual-only"><label>Barva Inner</label><input type="color" id="input-color-inner"></div>
-            </div>
-
-            <div class="form-group"><label>Pozadí</label><input type="color" id="input-color-bg"></div>
-
-<div class="form-row">
-                <!-- UPRAVENÁ SEKCE S VLASTNÍM PICKEREM -->
                 <div class="form-group half" style="position: relative;">
-                    <label>Ikona (Google Material)</label>
+                    <label>Ikona</label>
                     <div class="icon-input-group">
-                        <input type="text" id="input-icon" placeholder="vyber nebo napiš..." autocomplete="off">
+                        <input type="text" id="input-icon" placeholder="..." autocomplete="off">
                         <button id="btn-icon-picker" onclick="toggleIconPicker()">
                             <span class="material-symbols-outlined">grid_view</span>
                         </button>
                     </div>
-                    
-                    <!-- VLASTNÍ PICKER DROPDOWN -->
                     <div id="custom-icon-picker" class="hidden">
                         <div class="picker-search">
                             <span class="material-symbols-outlined">search</span>
-                            <input type="text" id="picker-search-input" placeholder="Hledat ikonu...">
+                            <input type="text" id="picker-search-input" placeholder="Hledat...">
                         </div>
-                        <div id="picker-grid">
-                            <!-- Ikony se vygenerují přes JS -->
-                        </div>
+                        <div id="picker-grid"></div>
                     </div>
                 </div>
-
-                <div class="form-group half"><label>Minimální hodnota</label><input type="number" id="input-min"></div>
+                <div class="form-group half"><label>Velikost: <span id="scale-val"></span></label><input type="range" id="input-scale" min="0.5" max="3.0" step="0.1"></div>
             </div>
-
-            <div class="form-group">
-                <label>Velikost: <span id="scale-val"></span></label>
-                <input type="range" id="input-scale" min="0.5" max="3.0" step="0.1">
+            
+            <div class="form-row standard-inputs">
+                <div class="form-group half"><label>Max Outer</label><input type="number" id="input-max-outer"></div>
+                <div class="form-group half"><label>Minimální hodnota</label><input type="number" id="input-min"></div>
             </div>
 
             <div class="form-row">
                 <div class="form-group checkbox half">
-                    <label><input type="checkbox" id="input-show-value"> Zobrazit hodnotu/AVG</label>
+                    <label><input type="checkbox" id="input-show-value"> Zobrazit hodnotu</label>
                 </div>
                 <div class="form-group checkbox half">
                     <label><input type="checkbox" id="input-enabled"> Zapnuto</label>
@@ -173,19 +220,24 @@
 
     <!-- IO MODAL -->
     <div id="io-modal" class="modal hidden">
-        <div class="modal-content io-content">
-            <h2 id="io-title">Export Nastavení</h2>
-            <textarea id="io-textarea" placeholder="Sem vlož JSON kód..."></textarea>
-            <div class="modal-actions">
-                <button id="btn-copy" onclick="copyToClipboard()">Zkopírovat</button>
-                <button id="btn-import" onclick="applyImport()" style="display:none;">Nahrát Nastavení</button>
-                <button class="cancel" onclick="closeIOModal()">Zavřít</button>
-            </div>
+      <div class="modal-content io-content">
+        <h2 id="io-title">Export Nastavení</h2>
+        <textarea
+          id="io-textarea"
+          placeholder="Sem vlož JSON kód..."
+        ></textarea>
+        <div class="modal-actions">
+          <button id="btn-copy" onclick="copyToClipboard()">Zkopírovat</button>
+          <button id="btn-import" onclick="applyImport()" style="display: none">
+            Nahrát Nastavení
+          </button>
+          <button class="cancel" onclick="closeIOModal()">Zavřít</button>
         </div>
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

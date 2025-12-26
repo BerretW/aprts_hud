@@ -28,9 +28,61 @@ body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 
 #hud-container { width: 100vw; height: 100vh; position: relative; z-index: 10; }
 #grid-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 5; background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px); pointer-events: none; }
 #grid-layer.hidden { display: none; }
-.hud-element { position: absolute; transform-origin: top left; cursor: default; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
+
+/* --- HUD ELEMENT & ANIMATIONS --- */
+.hud-element { 
+    position: absolute; 
+    transform-origin: top left; 
+    cursor: default; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    /* Plynulá animace při změně viditelnosti */
+    transition: opacity 0.3s ease, transform 0.3s ease; 
+}
+
+/* Třída pro skrytí elementu na základě podmínky (např. nejsem na koni) */
+.hud-element.hidden-condition {
+    opacity: 0 !important;
+    pointer-events: none;
+    transform: scale(0.9); /* Jemné zmenšení při zmizení */
+}
+
 .editable { outline: 2px dashed rgba(255, 255, 0, 0.7); cursor: grab; z-index: 1000; }
 .editable:hover { outline: 2px solid yellow; background-color: rgba(255, 255, 0, 0.1); }
+
+/* --- MULTILINE TEXT STYLE (QUESTY) --- */
+.style-multiline {
+    font-size: 14px;
+    font-weight: normal; 
+    text-shadow: 1px 1px 1px black;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: white;
+    max-width: 300px; /* Aby se text zalamoval */
+    white-space: pre-wrap; /* Zachová řádkování z Lua */
+    line-height: 1.4;
+    border-left: 3px solid #d9a838; /* Ozdobný proužek */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.style-multiline .multiline-label {
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.style-multiline .hud-icon {
+    font-size: 18px;
+}
 
 /* --- TEXT STYLE --- */
 .style-text { font-size: 16px; font-weight: bold; text-shadow: 1px 1px 2px black; padding: 5px 10px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; display: flex; align-items: center; gap: 8px; white-space: nowrap; color:white;}
@@ -112,8 +164,10 @@ input:checked + .slider { background-color: #38d960; }
 input:checked + .slider:before { transform: translateX(20px); }
 .overlay-buttons { display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-top: 15px; width: 100%; }
 .io-group { display: flex; gap: 5px; }
+
+/* --- MODAL --- */
 .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; display: flex; justify-content: center; align-items: center; pointer-events: auto; }
-.modal-content { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; width: 320px; border: 2px solid #555; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+.modal-content { background: #1a1a1a; color: white; padding: 20px; border-radius: 8px; width: 340px; border: 2px solid #555; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
 .modal-content h2 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
 .io-content { width: 500px; background: #151515; }
 #io-textarea { width: 100%; height: 200px; background: #0a0a0a; color: #00ff00; border: 1px solid #333; font-family: monospace; font-size: 11px; padding: 10px; resize: none; box-sizing: border-box; outline: none; }
@@ -123,10 +177,42 @@ input:checked + .slider:before { transform: translateX(20px); }
 .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #ccc; }
 .form-group input, .form-group select { width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; box-sizing: border-box; }
 select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- COLOR GROUP (Barva + Opacity slider) --- */
+.color-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.color-group input[type="color"] {
+    width: 45px;
+    padding: 2px;
+    height: 34px;
+    border: 1px solid #555;
+    cursor: pointer;
+    background: #222;
+}
+.color-group input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: #444;
+    border-radius: 3px;
+    padding: 0;
+    border: none;
+}
+.opacity-val {
+    font-size: 11px;
+    width: 32px;
+    text-align: right;
+    color: #888;
+    font-family: monospace;
+}
+
 .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 .modal-actions button { flex: 1; padding: 10px; cursor: pointer; border: none; font-weight: bold; border-radius: 4px; }
 .modal-actions button:first-child { background: #38d960; color: black; }
 .modal-actions button.cancel { background: #d93838; color: white; }
+
 .notification { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 7000; background: rgba(0, 0, 0, 0.95); border: 2px solid #38d960; border-radius: 6px; padding: 15px 25px; transition: all 0.3s; opacity: 1; }
 .notification.hidden { opacity: 0; top: -50px; pointer-events: none; }
 .notification-content { display: flex; align-items: center; gap: 12px; color: white; font-weight: bold; text-transform: uppercase; }
@@ -134,11 +220,8 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
 .notification.error { border-color: #d93838; }
 .notification.error .material-symbols-outlined { color: #d93838; }
 
-/* --- CUSTOM ICON PICKER (FLEXBOX FIX) --- */
-.icon-input-group {
-    display: flex;
-    gap: 5px;
-}
+/* --- CUSTOM ICON PICKER --- */
+.icon-input-group { display: flex; gap: 5px; }
 
 #btn-icon-picker {
     width: 40px;
@@ -153,23 +236,20 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
     transition: background 0.2s;
 }
 
-#btn-icon-picker:hover {
-    background: #d9a838;
-    color: black;
-}
+#btn-icon-picker:hover { background: #d9a838; color: black; }
 
 #custom-icon-picker {
     position: absolute;
     top: 65px;
     right: -10px; 
-    width: 270px; /* Fixní šířka okna */
+    width: 270px;
     background: #1a1a1a;
     border: 2px solid #d9a838;
     border-radius: 6px;
     z-index: 9999;
     padding: 10px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.9);
-    box-sizing: border-box; /* Důležité: padding se započítá do šířky */
+    box-sizing: border-box; 
 }
 
 .picker-search {
@@ -191,25 +271,19 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
     padding: 0 !important;
 }
 
-.picker-search span {
-    color: #888;
-    font-size: 18px;
-    margin-right: 5px;
-}
+.picker-search span { color: #888; font-size: 18px; margin-right: 5px; }
 
-/* ZMĚNA: Použijeme Flexbox místo Gridu pro spolehlivé zalamování */
 #picker-grid {
     display: flex;
-    flex-wrap: wrap; /* TOTO zajistí zalomení na nový řádek */
+    flex-wrap: wrap; 
     gap: 5px;
     max-height: 250px;
-    overflow-y: auto;  /* Povolit vertikální scroll */
-    overflow-x: hidden; /* Zakázat horizontální scroll */
+    overflow-y: auto;  
+    overflow-x: hidden; 
     padding-right: 5px;
-    align-content: flex-start; /* Ikony se "nalepí" nahoru */
+    align-content: flex-start;
 }
 
-/* Stylování scrollbaru */
 #picker-grid::-webkit-scrollbar { width: 5px; }
 #picker-grid::-webkit-scrollbar-track { background: #222; }
 #picker-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
@@ -218,7 +292,6 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Fixní rozměry dlaždice - vejde se jich cca 5-6 na řádek */
     width: 38px;
     height: 38px;
     background: #2a2a2a;
@@ -228,17 +301,8 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
     transition: all 0.2s;
     color: #ccc;
     box-sizing: border-box;
-    flex-shrink: 0; /* Zakázat zmenšování ikony */
+    flex-shrink: 0;
 }
 
-.picker-item:hover {
-    background: #d9a838;
-    color: black;
-    border-color: #fff;
-    transform: scale(1.1);
-}
-
-.picker-item .material-symbols-outlined {
-    font-size: 22px; /* O trochu menší ikona, aby se hezky vešla */
-    pointer-events: none; /* Kliknutí projde skrz na div */
-}
+.picker-item:hover { background: #d9a838; color: black; border-color: #fff; transform: scale(1.1); }
+.picker-item .material-symbols-outlined { font-size: 22px; pointer-events: none; }

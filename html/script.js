@@ -1,78 +1,52 @@
+// --- KONFIGURACE A DATA ---
+
 // Seznam vybraných Google ikon vhodných pro RedM/Roleplay
-// Rozšířený seznam Google ikon pro RedM/Roleplay
 const GOOGLE_ICONS_LIST = [
-    // --- ZDRAVÍ A STAV TĚLA ---
-    "favorite", "monitor_heart", "ecg_heart",  "heart_broken", // Srdce/tep
-    "health_and_safety", "medical_services", "healing", "medication", "vaccines", "pill", // Léky/doktor
-    "personal_injury", "skull", "bloodtype", "fluid", "water_drop", // Krev/zranění
-    "skeleton", "foot_bones", "tibia", "humerus", // Kosti (pokud jsou specifická zranění)
-    "blind", "visibility", "visibility_off", "hearing", "hearing_disabled", // Smysly
-    "accessibility_new", "body_fat",  "pregnant_woman", "elderly", // Postava
-    "wc", "soap", "wash", "clean_hands", "sanitizer", // Hygiena
+    // ZDRAVÍ
+    "favorite", "monitor_heart", "ecg_heart", "heart_broken", "health_and_safety", "medical_services", 
+    "healing", "medication", "vaccines", "pill", "personal_injury", "skull", "bloodtype", "fluid", 
+    "water_drop", "skeleton", "foot_bones", "tibia", "humerus", "blind", "visibility", "visibility_off", 
+    "hearing", "hearing_disabled", "accessibility_new", "body_fat", "pregnant_woman", "elderly", 
+    "wc", "soap", "wash", "clean_hands", "sanitizer", 
 
-    // --- PSYCHIKA A STAVY MYSLI ---
-    "mood", "mood_bad", "sentiment_very_satisfied", "sentiment_neutral", "sentiment_very_dissatisfied", // Nálada
-    "psychology", "psychology_alt", "memory", "neurology", // Mysl/mozek
-    "stress_management", "self_improvement", "mindfulness", "spa", "hot_tub", // Relax/stres
-    "face_5", "face_6", "sick", // Nemoc/nevolnost
-    "bedtime", "bedroom_baby", "hotel", "night_shelter", "do_not_disturb", // Spánek/únava
-    "blur_on", "blur_off", "opacity", "leak_add", // Opilost/halucinace (rozmazání)
-    "theater_comedy", "masks", "domino_mask","sentiment_stressed","relax", // Roleplay/přetvářka
+    // PSYCHIKA
+    "mood", "mood_bad", "sentiment_very_satisfied", "sentiment_neutral", "sentiment_very_dissatisfied", 
+    "psychology", "psychology_alt", "memory", "neurology", "stress_management", "self_improvement", 
+    "mindfulness", "spa", "hot_tub", "face_5", "face_6", "sick", "bedtime", "bedroom_baby", "hotel", 
+    "night_shelter", "do_not_disturb", "blur_on", "blur_off", "opacity", "leak_add", "theater_comedy", 
+    "masks", "domino_mask", "sentiment_stressed", "relax", 
     
-    // --- JÍDLO, PITÍ A ALKOHOL ---
-    "lunch_dining", "restaurant", "silverware", "dinner_dining", "soup_kitchen", // Jídlo obecně
-    "bakery_dining", "cake", "cookie", "egg", "egg_alt", "icecream", // Pečivo/sladké
-    "set_meal", "kebab_dining", "rice_bowl", "tapas", "nutrition", // Konkrétní jídla
-    "water_drop", "water_full", "local_drink", "coffee", "tea", // Nealko
-    "liquor", "local_bar", "wine_bar", "sports_bar", "nightlife", // Alkohol
-    "smoking_rooms", "vape_free", "no_drinks", // Cigarety/zákazy
+    // JÍDLO A PITÍ
+    "lunch_dining", "restaurant", "silverware", "dinner_dining", "soup_kitchen", "bakery_dining", 
+    "cake", "cookie", "egg", "egg_alt", "icecream", "set_meal", "kebab_dining", "rice_bowl", 
+    "tapas", "nutrition", "water_drop", "water_full", "local_drink", "coffee", "tea", "liquor", 
+    "local_bar", "wine_bar", "sports_bar", "nightlife", "smoking_rooms", "vape_free", "no_drinks", 
     
-    // --- ZEMĚDĚLSTVÍ, PŘÍRODA A POČASÍ ---
-    "agriculture", "grass", "grain", "potted_plant", "local_florist", // Základ zemědělství
-    "compost", "eco", "leaf_spark", "heap_snapshot", "gardening", // Hnojivo/hlína/listí
-    "forest", "trees", "park", "nature", "nature_people", // Les/příroda
-    "landscape", "terrain", "volcano", "landslide", // Terén
-    "water", "waves", "tsunami", "flood", // Voda/řeka
-    "wb_sunny", "dark_mode", "sunny_snowing", "cloud", "rainy", "thunderstorm", "air", "cyclone", // Počasí
-    "ac_unit", "severe_cold", "fire_truck", "local_fire_department", "fireplace", // Teplo/zima/oheň
-    "hive", "nest_cam_wired_stand", // Úl (symbolicky)
+    // PŘÍRODA A POČASÍ
+    "agriculture", "grass", "grain", "potted_plant", "local_florist", "compost", "eco", "leaf_spark", 
+    "heap_snapshot", "gardening", "forest", "trees", "park", "nature", "nature_people", "landscape", 
+    "terrain", "volcano", "landslide", "water", "waves", "tsunami", "flood", "wb_sunny", "dark_mode", 
+    "sunny_snowing", "cloud", "rainy", "thunderstorm", "air", "cyclone", "ac_unit", "severe_cold", 
+    "fire_truck", "local_fire_department", "fireplace", "hive", "nest_cam_wired_stand", 
 
-    // --- ZVÍŘATA A LOV ---
-    "pets", "paw", "cruelty_free", "sound_detection_dog_barking", // Pes/obecné
-    "bug_report", "pest_control", "pest_control_rodent", "bee", // Hmyz/hlodavci
-    "flutter_dash", "raven", // Ptáci
-    "phishing", "fishing", "set_meal", // Rybaření
-    "scuba_diving", "bedroom_baby", // Kůň (Material symbols nemá přímou ikonu koně, používá se pets nebo chess_knight, ale ten tu není, zkusíme 'bedroom_baby' jako houpacího koně nebo prostě 'pets')
-    "directions_run", "sprint", "hiking", // Pohyb zvířat
-
-    // --- CRAFTING, PRÁCE A NÁSTROJE ---
-    "build", "handyman", "construction", "architecture", // Stavění
-    "cut", "content_cut", "carpenter", "hardware", // Řezání/dřevo
-    "brush", "palette", "format_paint", // Malování/barvení
-    "anchor", "iron", // Kovářství (symbolicky)
-    "science", "biotech", "experiment", // Alchymie/věda
-     "diamond", "hexagon", // Těžba
-    "inventory_2", "backpack", "shopping_bag", "luggage", // Inventář
-    "key", "key_off", "lock", "lock_open", // Zámky
-    "map", "explore", "compass_calibration", "my_location", // Mapa
-    
-    // --- ZBRANĚ A KRIMINALITA ---
-    "swords", "shield", "security", "gavel", "local_police", "badge", // Zákon/ochrana
-    "crisis_alert", "target", "gps_fixed", "my_location", // Míření
-    "sports_mma", "sports_kabaddi",  // Pěstní souboj
-    "warning", "error", "report", "dangerous", "skull", // Nebezpečí
-    "bomb", "explosion", // Výbušniny (některé fonty to mají)
-    
-    // --- PENÍZE A OBCHOD ---
-    "attach_money", "money_bag", "savings", "paid", "currency_exchange", // Peníze
-    "shopping_cart", "store", "storefront", "sell", "receipt_long", // Obchod
-    "work", "engineering", "group", "handshake","clock_loader_90","timer","calendar_clock" // Práce/interakce
+    // OSTATNÍ (Lov, Práce, Zbraně...)
+    "pets", "paw", "cruelty_free", "sound_detection_dog_barking", "bug_report", "pest_control", 
+    "pest_control_rodent", "bee", "flutter_dash", "raven", "phishing", "fishing", "scuba_diving", 
+    "directions_run", "sprint", "hiking", "build", "handyman", "construction", "architecture", 
+    "cut", "content_cut", "carpenter", "hardware", "brush", "palette", "format_paint", "anchor", 
+    "iron", "science", "biotech", "experiment", "diamond", "hexagon", "inventory_2", "backpack", 
+    "shopping_bag", "luggage", "key", "key_off", "lock", "lock_open", "map", "explore", 
+    "compass_calibration", "my_location", "swords", "shield", "security", "gavel", "local_police", 
+    "badge", "crisis_alert", "target", "gps_fixed", "sports_mma", "sports_kabaddi", "warning", 
+    "error", "report", "dangerous", "bomb", "explosion", "attach_money", "money_bag", "savings", 
+    "paid", "currency_exchange", "shopping_cart", "store", "storefront", "sell", "receipt_long", 
+    "work", "engineering", "group", "handshake", "clock_loader_90", "timer", "calendar_clock" 
 ];
 
 const defaultSettings = {
     health: { 
         label: "HP", 
-        icon: "favorite", // Srdce (klasika)
+        icon: "favorite", 
         style: "circle", mode: "dual",
         srcOuter: "health_outer", srcInner: "health_inner",
         colorOuter: "#d93838", colorInner: "#ff8080", colorBg: "#4a1212", 
@@ -81,7 +55,7 @@ const defaultSettings = {
     },
     stamina: { 
         label: "STA", 
-        icon: "bolt", // Blesk (energie)
+        icon: "bolt", 
         style: "circle", mode: "dual",
         srcOuter: "stamina_outer", srcInner: "stamina_inner",
         colorOuter: "#d9a838", colorInner: "#ffe080", colorBg: "#4a3812", 
@@ -90,7 +64,7 @@ const defaultSettings = {
     },
     hunger: { 
         label: "JÍDLO", 
-        icon: "restaurant", // Příbor (vypadá lépe v RP než burger 'lunch_dining')
+        icon: "restaurant", 
         style: "bar", mode: "single",
         srcOuter: "hunger", srcInner: null,
         colorOuter: "#38d960", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
@@ -99,7 +73,7 @@ const defaultSettings = {
     },
     thirst: { 
         label: "PITÍ", 
-        icon: "water_drop", // Kapka vody
+        icon: "water_drop", 
         style: "bar", mode: "single",
         srcOuter: "thirst", srcInner: null,
         colorOuter: "#388bd9", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
@@ -108,7 +82,7 @@ const defaultSettings = {
     },
     nutrition: {
         label: "AVG", 
-        icon: "spa", // List/Lotos (symbolizuje vitamíny/přírodu)
+        icon: "spa", 
         style: "nutri", mode: "single",
         srcOuter: null, srcInner: null,
         slots: ["protein", "fats", "carbs", "vitamins"], 
@@ -127,15 +101,22 @@ let availableVariables = new Set();
 
 const NUTRI_COLORS = ['#7b8a9a', '#c9a36a', '#7fa075', '#a17bb5'];
 
+// --- INIT ---
+
 $(document).ready(function() {
     loadSettings();
     renderHud();
     initIconPicker();
-    // --- ODSTRANĚNO: Inicializace Iconpickeru (již není potřeba) ---
 
     $('#input-scale').on('input', function() { $('#scale-val').text($(this).val()); });
-    $('#input-mode').on('change', function() { toggleModalFields($(this).val()); });
-    $('#input-style').on('change', function() { toggleModalStyleFields($(this).val()); });
+    
+    // Změna: toggleModalFields nyní reaguje na změnu STYLU
+    $('#input-style').on('change', function() { toggleModalFields($(this).val()); });
+
+    // Listener pro slidery průhlednosti (aktualizace textu %)
+    $('.color-group input[type="range"]').on('input', function() {
+        $(this).next('.opacity-val').text($(this).val() + '%');
+    });
 
     window.addEventListener('message', function(event) {
         let data = event.data;
@@ -180,16 +161,26 @@ function renderHud() {
         
         if (!data.enabled) el.css('opacity', '0.3');
 
-        // Helper funkce pro vytvoření HTML ikony (Google Material)
         const renderIcon = (iconName, color = null) => {
             if (!iconName) return "";
             let style = color ? `style="color:${color}"` : "";
-            // Třída hud-icon je v CSS definována pro nastavení velikosti
             return `<span class="material-symbols-outlined hud-icon" ${style}>${iconName}</span>`;
         };
 
+        // --- MULTILINE STYLE (QUESTY) ---
+        if (data.style === 'multiline') {
+            let iconHtml = data.icon ? renderIcon(data.icon, data.colorOuter) : "";
+            el.html(`
+                <div class="style-multiline" style="background:${data.colorBg}; border-left-color:${data.colorOuter};">
+                    <div class="multiline-label" style="color:${data.colorOuter}">
+                        ${iconHtml} <span>${data.label}</span>
+                    </div>
+                    <div class="multiline-content">Načítání...</div>
+                </div>
+            `);
+        }
         // --- NUTRI STYLE ---
-        if (data.style === 'nutri') {
+        else if (data.style === 'nutri') {
             const size = 130;
             const stroke = 6;
             const gap = 3;
@@ -228,7 +219,6 @@ function renderHud() {
         }
         // --- GAUGE STYLE ---
         else if (data.style === 'gauge') {
-            // Gauge potřebuje specifickou třídu pro ikonu kvůli pozici
             let iconHtml = data.icon ? `<span class="material-symbols-outlined hud-icon" style="color:${data.colorOuter}">${data.icon}</span>` : "";
             el.html(`
                 <div class="style-gauge">
@@ -325,12 +315,32 @@ function initDualCircle(key, data) {
     }
 }
 
-// --- UPDATE HODNOT ---
+// --- UPDATE HODNOT A PODMÍNKY ---
 function updateValues(statusData) {
     for (const [key, data] of Object.entries(indicators)) {
+        let el = $(`#${key}`);
+
+        // 1. KONTROLA PODMÍNKY ZOBRAZENÍ
+        // Zpětná kompatibilita: visibleCondition
+        let checkVar = data.condVar || data.visibleCondition;
+        
+        if (checkVar && checkVar !== "") {
+            let currentVal = statusData[checkVar];
+            // Vyhodnocení pomocí helperu (==, !=, >, <)
+            let isVisible = evaluateCondition(currentVal, data.condOp, data.condVal);
+
+            if (!isVisible && !isEditMode) {
+                el.addClass('hidden-condition');
+                continue; // Element skrytý, přeskočíme update
+            } else {
+                el.removeClass('hidden-condition');
+            }
+        } else {
+            el.removeClass('hidden-condition');
+        }
+
         if (!data.enabled) continue;
 
-        let el = $(`#${key}`);
         let min = data.min || 0;
         let maxO = data.maxOuter || 100;
 
@@ -340,7 +350,19 @@ function updateValues(statusData) {
             return 0;
         };
 
-        // --- NUTRI STYLE ---
+        // --- MULTILINE UPDATE ---
+        if (data.style === 'multiline') {
+            let textVal = statusData[data.srcOuter];
+            // Pokud je hodnota objekt (např. quest data), zkusíme vypsat description
+            if (typeof textVal === 'object' && textVal !== null) {
+                textVal = textVal.description || JSON.stringify(textVal);
+            }
+            if (textVal === undefined || textVal === null) textVal = "";
+            el.find('.multiline-content').text(textVal);
+            continue;
+        }
+
+        // --- NUTRI UPDATE ---
         if (data.style === 'nutri') {
             let slots = data.slots || [];
             let total = 0;
@@ -378,7 +400,7 @@ function updateValues(statusData) {
             continue;
         }
 
-        // --- STACK STYLE ---
+        // --- STACK UPDATE ---
         let valueFields = el.find('.text-value, .bar-value, .gauge-value, .stack-val');
         if (data.showValue === false) valueFields.hide(); else valueFields.show();
 
@@ -447,6 +469,8 @@ function updateValues(statusData) {
 }
 
 // --- MODAL FUNKCE ---
+
+// Načte seznam proměnných do dropdownu (Datové zdroje)
 function populateVariableSelects(selectedOuter, selectedInner, slots) {
     let opts = '<option value="">-- Vyber --</option>';
     Array.from(availableVariables).sort().forEach(v => {
@@ -466,6 +490,15 @@ function populateVariableSelects(selectedOuter, selectedInner, slots) {
     }
 }
 
+// Načte seznam proměnných do dropdownu (Podmínky)
+function populateConditionVarSelect(selected) {
+    let opts = '<option value="">-- Žádná podmínka --</option>';
+    Array.from(availableVariables).sort().forEach(v => {
+        opts += `<option value="${v}">${v}</option>`;
+    });
+    $('#input-cond-var').html(opts).val(selected);
+}
+
 function openModal(key) {
     currentEditingKey = key;
     let data = indicators[key];
@@ -473,44 +506,73 @@ function openModal(key) {
     $('#input-label').val(data.label || key.toUpperCase());
     $('#input-style').val(data.style || 'circle');
     $('#input-mode').val(data.mode);
-    
-    // Zde se jen načte textová hodnota (např. "favorite")
     $('#input-icon').val(data.icon);
+
+    // --- NAČTENÍ PODMÍNKY ---
+    // Zpětná kompatibilita: 'visibleCondition' se mapuje na 'condVar'
+    let varName = data.condVar || data.visibleCondition || "";
     
+    populateConditionVarSelect(varName);
+    $('#input-cond-op').val(data.condOp || "none");
+    $('#input-cond-val').val(data.condVal || "");
+    
+    // Datové zdroje
     populateVariableSelects(data.srcOuter, data.srcInner, data.slots);
 
     $('#input-max-outer').val(data.maxOuter || 100);
     $('#input-max-inner').val(data.maxInner || 100);
     $('#input-min').val(data.min);
-    $('#input-color-outer').val(data.colorOuter);
-    $('#input-color-inner').val(data.colorInner || "#ffffff");
-    $('#input-color-bg').val(data.colorBg.startsWith('#') || data.colorBg.startsWith('rgb') ? rgb2hex(data.colorBg) : "#000000");
+
+    // --- PARSING BAREV (RGBA -> Hex + Alpha) ---
+    let cOut = parseRgba(data.colorOuter || "#ffffff");
+    $('#input-color-outer').val(cOut.hex);
+    $('#input-opacity-outer').val(cOut.alpha);
+    $('#val-opacity-outer').text(cOut.alpha + '%');
+
+    let cIn = parseRgba(data.colorInner || "#ffffff");
+    $('#input-color-inner').val(cIn.hex);
+    $('#input-opacity-inner').val(cIn.alpha);
+    $('#val-opacity-inner').text(cIn.alpha + '%');
+
+    let cBg = parseRgba(data.colorBg || "rgba(0,0,0,0.5)");
+    $('#input-color-bg').val(cBg.hex);
+    $('#input-opacity-bg').val(cBg.alpha);
+    $('#val-opacity-bg').text(cBg.alpha + '%');
+    // ------------------------------------------
+
     $('#input-scale').val(data.scale);
     $('#scale-val').text(data.scale);
     $('#input-show-value').prop('checked', data.showValue !== false);
     $('#input-enabled').prop('checked', data.enabled);
     
-    toggleModalFields(data.mode);
-    toggleModalStyleFields(data.style);
+    toggleModalFields(data.style);
     $('#settings-modal').removeClass('hidden');
 }
 
-function toggleModalStyleFields(style) {
+function toggleModalFields(style) {
+    // Reset - zobrazíme standardní, skryjeme stack
+    $('.standard-inputs').show();
+    $('#stack-inputs').addClass('hidden');
+    
+    // Povolíme Mode výběr a zobrazíme Dual inputs jako výchozí stav
+    $('#input-mode').prop('disabled', false); 
+    $('.dual-only').show(); 
+
     if (style === 'stack' || style === 'nutri') {
         $('.standard-inputs').hide();
         $('#stack-inputs').removeClass('hidden');
+        // Stack a Nutri nemají Dual mode
         $('#input-mode').val('single').prop('disabled', true);
-    } else {
-        $('.standard-inputs').show();
-        $('#stack-inputs').addClass('hidden');
-        
-        if (style === 'bar' || style === 'gauge') {
-            $('#input-mode').val('single').trigger('change');
-            $('#input-mode').prop('disabled', true);
-        } else {
-            $('#input-mode').prop('disabled', false);
-        }
+    } 
+    else if (style === 'multiline') {
+        $('.dual-only').hide(); 
+        $('#input-mode').val('single').prop('disabled', true);
     }
+    else if (style === 'bar' || style === 'gauge') {
+        $('.dual-only').hide(); 
+        $('#input-mode').val('single').prop('disabled', true);
+    } 
+    // Pro 'circle' a 'text' zůstává Mode povolený a Dual inputs viditelné
 }
 
 function saveModal() {
@@ -521,6 +583,13 @@ function saveModal() {
     indicators[k].style = $('#input-style').val();
     indicators[k].mode = $('#input-mode').val();
     
+    // --- ULOŽENÍ PODMÍNKY ---
+    indicators[k].condVar = $('#input-cond-var').val();
+    indicators[k].condOp = $('#input-cond-op').val();
+    indicators[k].condVal = $('#input-cond-val').val();
+    delete indicators[k].visibleCondition; // Cleanup starého parametru
+    // ------------------------
+
     indicators[k].srcOuter = $('#input-src-outer').val();
     indicators[k].srcInner = $('#input-src-inner').val();
 
@@ -536,11 +605,13 @@ function saveModal() {
     indicators[k].maxOuter = parseFloat($('#input-max-outer').val()) || 100;
     indicators[k].maxInner = parseFloat($('#input-max-inner').val()) || 100;
     indicators[k].min = parseFloat($('#input-min').val()) || 0;
-    indicators[k].colorOuter = $('#input-color-outer').val();
-    indicators[k].colorInner = $('#input-color-inner').val();
-    indicators[k].colorBg = $('#input-color-bg').val();
+
+    // --- SAVE BAREV (Hex + Alpha -> RGBA) ---
+    indicators[k].colorOuter = hexToRgba($('#input-color-outer').val(), $('#input-opacity-outer').val());
+    indicators[k].colorInner = hexToRgba($('#input-color-inner').val(), $('#input-opacity-inner').val());
+    indicators[k].colorBg = hexToRgba($('#input-color-bg').val(), $('#input-opacity-bg').val());
+    // ----------------------------------------
     
-    // Ukládáme textovou hodnotu ikony
     indicators[k].icon = $('#input-icon').val();
     
     indicators[k].scale = parseFloat($('#input-scale').val());
@@ -552,8 +623,84 @@ function saveModal() {
     showNotification("Změny aplikovány");
 }
 
-function rgb2hex(orig){ if(!orig) return "#000000"; if(orig.startsWith('#')) return orig; let rgb = orig.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i); return (rgb && rgb.length === 4) ? "#" + ("0" + parseInt(rgb[1],10).toString(16)).slice(-2) + ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) + ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : orig; }
-function toggleModalFields(mode) { if (mode === 'single') { $('.dual-only').hide(); } else { $('.dual-only').show(); $('.dual-only').css('display', 'block'); $('.form-row .dual-only').css('display', 'block'); } }
+// --- HELPERY (MATH, COLOR, LOGIC) ---
+
+// Logické vyhodnocení podmínky
+function evaluateCondition(currentVal, operator, targetVal) {
+    // Pokud není operátor nebo hodnota, chováme se jako prosté "existuje/není nula"
+    if (!operator || operator === 'none' || targetVal === "") {
+        return !!currentVal; 
+    }
+
+    let cleanTarget = targetVal;
+
+    // Pokud je currentVal číslo, převedeme input na číslo
+    if (typeof currentVal === 'number') {
+        cleanTarget = parseFloat(targetVal);
+        if (isNaN(cleanTarget)) cleanTarget = 0; 
+    } 
+    // Pokud je currentVal boolean, převedeme text na boolean
+    else if (typeof currentVal === 'boolean') {
+        cleanTarget = (targetVal.toLowerCase() === 'true' || targetVal === '1');
+    }
+
+    switch (operator) {
+        case '==': return currentVal == cleanTarget;
+        case '!=': return currentVal != cleanTarget;
+        case '>':  return currentVal >  cleanTarget;
+        case '>=': return currentVal >= cleanTarget;
+        case '<':  return currentVal <  cleanTarget;
+        case '<=': return currentVal <= cleanTarget;
+        default: return !!currentVal;
+    }
+}
+
+// Převod Hex na Rgba string
+function hexToRgba(hex, alphaPercent) {
+    let c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){ c= [c[0], c[0], c[1], c[1], c[2], c[2]]; }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+(alphaPercent/100)+')';
+    }
+    return hex; 
+}
+
+// Rozklad Rgba stringu na Hex a Alpha
+function parseRgba(rgbaStr) {
+    if (!rgbaStr || !rgbaStr.startsWith('rgba')) return { hex: rgbaStr || "#ffffff", alpha: 100 };
+    let sep = rgbaStr.indexOf(",") > -1 ? "," : " "; 
+    let parts = rgbaStr.substr(5).split(")")[0].split(sep);
+    let r = (+parts[0]).toString(16), g = (+parts[1]).toString(16), b = (+parts[2]).toString(16);
+    if (r.length == 1) r = "0" + r;
+    if (g.length == 1) g = "0" + g;
+    if (b.length == 1) b = "0" + b;
+    let alpha = parts[3] ? Math.round(parseFloat(parts[3]) * 100) : 100;
+    return { hex: "#" + r + g + b, alpha: alpha };
+}
+
+// Helpers pro SVG oblouky (Nutri styl)
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+    return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+    };
+}
+
+function describeArc(x, y, radius, startAngle, endAngle) {
+    var start = polarToCartesian(x, y, radius, endAngle);
+    var end = polarToCartesian(x, y, radius, startAngle);
+    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    var d = [
+        "M", start.x, start.y, 
+        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+    ].join(" ");
+    return d;
+}
+
+// --- STANDARD SYSTEM FUNCTIONS ---
 function closeModal() { $('#settings-modal').addClass('hidden'); currentEditingKey = null; }
 function toggleGrid(checked) { snapToGrid = checked; checked ? $('#grid-layer').removeClass('hidden') : $('#grid-layer').addClass('hidden'); }
 function toggleEditMode(enable) {
@@ -579,10 +726,7 @@ function showNotification(message, isError = false) {
     let el = $('#custom-notification'); 
     let icon = $('#notif-icon'); 
     $('#notif-text').text(message); 
-    
-    // Upraveno pro Google Icons
     isError ? (el.addClass('error'), icon.text('error')) : (el.removeClass('error'), icon.text('check_circle')); 
-    
     el.removeClass('hidden'); 
     setTimeout(() => { el.addClass('hidden'); }, 3000); 
 }
@@ -596,7 +740,7 @@ function loadSettings() { let saved = localStorage.getItem('redm_hud_v7'); if (s
 function addNewElement() {
     let newId = "custom_" + Math.floor(Math.random() * 100000);
     indicators[newId] = {
-        label: "NOVÝ", icon: "star", style: "circle", mode: "single", // icon: star
+        label: "NOVÝ", icon: "star", style: "circle", mode: "single",
         srcOuter: "", srcInner: "", colorOuter: "#ffffff", colorInner: "#ffffff", 
         colorBg: "rgba(0,0,0,0.5)", min: 0, maxOuter: 100, maxInner: 100, 
         speed: 400, scale: 1.0, showValue: true, x: 50, y: 50, enabled: true 
@@ -614,33 +758,10 @@ function makeDraggable(elmnt) {
     function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
 }
 
-// --- MATH HELPERS PRO SVG ---
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-    return {
-        x: centerX + (radius * Math.cos(angleInRadians)),
-        y: centerY + (radius * Math.sin(angleInRadians))
-    };
-}
-
-function describeArc(x, y, radius, startAngle, endAngle) {
-    var start = polarToCartesian(x, y, radius, endAngle);
-    var end = polarToCartesian(x, y, radius, startAngle);
-    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    var d = [
-        "M", start.x, start.y, 
-        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-    ].join(" ");
-    return d;
-}
-
-// --- LOGIKA PRO CUSTOM ICON PICKER ---
-
+// --- CUSTOM ICON PICKER ---
 function initIconPicker() {
     const grid = $('#picker-grid');
     grid.empty();
-
-    // Vygenerovat HTML pro každou ikonu
     GOOGLE_ICONS_LIST.forEach(iconName => {
         const item = $(`
             <div class="picker-item" title="${iconName}" onclick="selectIcon('${iconName}')">
@@ -650,7 +771,6 @@ function initIconPicker() {
         grid.append(item);
     });
 
-    // Event listener pro hledání
     $('#picker-search-input').on('keyup', function() {
         const val = $(this).val().toLowerCase();
         $('.picker-item').each(function() {
@@ -663,7 +783,6 @@ function initIconPicker() {
         });
     });
 
-    // Zavření pickeru při kliknutí mimo
     $(document).on('click', function(e) {
         if (!$(e.target).closest('#custom-icon-picker, #btn-icon-picker').length) {
             $('#custom-icon-picker').addClass('hidden');
@@ -683,7 +802,6 @@ function toggleIconPicker() {
 
 function selectIcon(iconName) {
     $('#input-icon').val(iconName);
-    // Trigger input event, aby se případně něco aktualizovalo (pokud bys tam měl listener)
     $('#input-icon').trigger('input'); 
     $('#custom-icon-picker').addClass('hidden');
 }

@@ -193,7 +193,7 @@ CreateThread(function()
         stats.tool_durability = SafeExport("aprts_tools", "GetToolDurability", 0)
         stats.body_temp = SafeExport("aprts_medicalAtention", "getBodyTemperature", 36.0)
         stats.mined_nodes = SafeExport("aprts_miningV2", "getMinedNodesCount", 0)
-        stats.quest_desc = SafeExport("aprts_simplequests", "GetActiveQuest", {}).description or "No active quest"
+        stats.quest_desc = SafeExport("aprts_simplequests", "GetActiveQuest", {}).description or nil
         -- print(json.encode(SafeExport("aprts_simplequests", "GetActiveQuest", {}), { indent = true }))
         skills = SafeExport("westhaven_skill", "getMySkills", {})
         -- stats.skills = skills
