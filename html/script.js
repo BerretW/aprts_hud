@@ -1,37 +1,116 @@
+// Seznam vybraných Google ikon vhodných pro RedM/Roleplay
+// Rozšířený seznam Google ikon pro RedM/Roleplay
+const GOOGLE_ICONS_LIST = [
+    // --- ZDRAVÍ A STAV TĚLA ---
+    "favorite", "monitor_heart", "ecg_heart",  "heart_broken", // Srdce/tep
+    "health_and_safety", "medical_services", "healing", "medication", "vaccines", "pill", // Léky/doktor
+    "personal_injury", "skull", "bloodtype", "fluid", "water_drop", // Krev/zranění
+    "skeleton", "foot_bones", "tibia", "humerus", // Kosti (pokud jsou specifická zranění)
+    "blind", "visibility", "visibility_off", "hearing", "hearing_disabled", // Smysly
+    "accessibility_new", "body_fat",  "pregnant_woman", "elderly", // Postava
+    "wc", "soap", "wash", "clean_hands", "sanitizer", // Hygiena
+
+    // --- PSYCHIKA A STAVY MYSLI ---
+    "mood", "mood_bad", "sentiment_very_satisfied", "sentiment_neutral", "sentiment_very_dissatisfied", // Nálada
+    "psychology", "psychology_alt", "memory", "neurology", // Mysl/mozek
+    "stress_management", "self_improvement", "mindfulness", "spa", "hot_tub", // Relax/stres
+    "face_5", "face_6", "sick", // Nemoc/nevolnost
+    "bedtime", "bedroom_baby", "hotel", "night_shelter", "do_not_disturb", // Spánek/únava
+    "blur_on", "blur_off", "opacity", "leak_add", // Opilost/halucinace (rozmazání)
+    "theater_comedy", "masks", "domino_mask","sentiment_stressed","relax", // Roleplay/přetvářka
+    
+    // --- JÍDLO, PITÍ A ALKOHOL ---
+    "lunch_dining", "restaurant", "silverware", "dinner_dining", "soup_kitchen", // Jídlo obecně
+    "bakery_dining", "cake", "cookie", "egg", "egg_alt", "icecream", // Pečivo/sladké
+    "set_meal", "kebab_dining", "rice_bowl", "tapas", "nutrition", // Konkrétní jídla
+    "water_drop", "water_full", "local_drink", "coffee", "tea", // Nealko
+    "liquor", "local_bar", "wine_bar", "sports_bar", "nightlife", // Alkohol
+    "smoking_rooms", "vape_free", "no_drinks", // Cigarety/zákazy
+    
+    // --- ZEMĚDĚLSTVÍ, PŘÍRODA A POČASÍ ---
+    "agriculture", "grass", "grain", "potted_plant", "local_florist", // Základ zemědělství
+    "compost", "eco", "leaf_spark", "heap_snapshot", "gardening", // Hnojivo/hlína/listí
+    "forest", "trees", "park", "nature", "nature_people", // Les/příroda
+    "landscape", "terrain", "volcano", "landslide", // Terén
+    "water", "waves", "tsunami", "flood", // Voda/řeka
+    "wb_sunny", "dark_mode", "sunny_snowing", "cloud", "rainy", "thunderstorm", "air", "cyclone", // Počasí
+    "ac_unit", "severe_cold", "fire_truck", "local_fire_department", "fireplace", // Teplo/zima/oheň
+    "hive", "nest_cam_wired_stand", // Úl (symbolicky)
+
+    // --- ZVÍŘATA A LOV ---
+    "pets", "paw", "cruelty_free", "sound_detection_dog_barking", // Pes/obecné
+    "bug_report", "pest_control", "pest_control_rodent", "bee", // Hmyz/hlodavci
+    "flutter_dash", "raven", // Ptáci
+    "phishing", "fishing", "set_meal", // Rybaření
+    "scuba_diving", "bedroom_baby", // Kůň (Material symbols nemá přímou ikonu koně, používá se pets nebo chess_knight, ale ten tu není, zkusíme 'bedroom_baby' jako houpacího koně nebo prostě 'pets')
+    "directions_run", "sprint", "hiking", // Pohyb zvířat
+
+    // --- CRAFTING, PRÁCE A NÁSTROJE ---
+    "build", "handyman", "construction", "architecture", // Stavění
+    "cut", "content_cut", "carpenter", "hardware", // Řezání/dřevo
+    "brush", "palette", "format_paint", // Malování/barvení
+    "anchor", "iron", // Kovářství (symbolicky)
+    "science", "biotech", "experiment", // Alchymie/věda
+     "diamond", "hexagon", // Těžba
+    "inventory_2", "backpack", "shopping_bag", "luggage", // Inventář
+    "key", "key_off", "lock", "lock_open", // Zámky
+    "map", "explore", "compass_calibration", "my_location", // Mapa
+    
+    // --- ZBRANĚ A KRIMINALITA ---
+    "swords", "shield", "security", "gavel", "local_police", "badge", // Zákon/ochrana
+    "crisis_alert", "target", "gps_fixed", "my_location", // Míření
+    "sports_mma", "sports_kabaddi",  // Pěstní souboj
+    "warning", "error", "report", "dangerous", "skull", // Nebezpečí
+    "bomb", "explosion", // Výbušniny (některé fonty to mají)
+    
+    // --- PENÍZE A OBCHOD ---
+    "attach_money", "money_bag", "savings", "paid", "currency_exchange", // Peníze
+    "shopping_cart", "store", "storefront", "sell", "receipt_long", // Obchod
+    "work", "engineering", "group", "handshake","clock_loader_90","timer","calendar_clock" // Práce/interakce
+];
+
 const defaultSettings = {
     health: { 
-        label: "HP", icon: "fa-solid fa-heart", style: "circle", mode: "dual",
+        label: "HP", 
+        icon: "favorite", // Srdce (klasika)
+        style: "circle", mode: "dual",
         srcOuter: "health_outer", srcInner: "health_inner",
         colorOuter: "#d93838", colorInner: "#ff8080", colorBg: "#4a1212", 
         min: 0, maxOuter: 600, maxInner: 100, 
         speed: 400, scale: 1.0, x: 2, y: 90, enabled: true 
     },
     stamina: { 
-        label: "STA", icon: "fa-solid fa-bolt", style: "circle", mode: "dual",
+        label: "STA", 
+        icon: "bolt", // Blesk (energie)
+        style: "circle", mode: "dual",
         srcOuter: "stamina_outer", srcInner: "stamina_inner",
         colorOuter: "#d9a838", colorInner: "#ffe080", colorBg: "#4a3812", 
         min: 0, maxOuter: 100, maxInner: 100, 
         speed: 400, scale: 1.0, x: 10, y: 90, enabled: true 
     },
     hunger: { 
-        label: "JÍDLO", icon: "fa-solid fa-drumstick-bite", style: "bar", mode: "single",
+        label: "JÍDLO", 
+        icon: "restaurant", // Příbor (vypadá lépe v RP než burger 'lunch_dining')
+        style: "bar", mode: "single",
         srcOuter: "hunger", srcInner: null,
         colorOuter: "#38d960", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
         min: 0, maxOuter: 1000, maxInner: 1000,
         speed: 800, scale: 1.0, x: 18, y: 88, enabled: true 
     },
     thirst: { 
-        label: "PITÍ", icon: "fa-solid fa-droplet", style: "bar", mode: "single",
+        label: "PITÍ", 
+        icon: "water_drop", // Kapka vody
+        style: "bar", mode: "single",
         srcOuter: "thirst", srcInner: null,
         colorOuter: "#388bd9", colorInner: null, colorBg: "rgba(0,0,0,0.6)", 
         min: 0, maxOuter: 1000, maxInner: 1000,
         speed: 800, scale: 1.0, x: 18, y: 93, enabled: true 
     },
-    // Ukázka výchozího nastavení pro NUTRI
     nutrition: {
-        label: "AVG", icon: "", style: "nutri", mode: "single",
+        label: "AVG", 
+        icon: "spa", // List/Lotos (symbolizuje vitamíny/přírodu)
+        style: "nutri", mode: "single",
         srcOuter: null, srcInner: null,
-        // Defaultní sloty, uživatel si je musí napojit na správná data z exportu
         slots: ["protein", "fats", "carbs", "vitamins"], 
         colorOuter: "#ffffff", colorInner: null, colorBg: "rgba(0,0,0,0.55)",
         min: 0, maxOuter: 100, maxInner: 100,
@@ -46,33 +125,13 @@ let snapToGrid = false;
 const GRID_SIZE = 40;
 let availableVariables = new Set(); 
 
-// Definice barev pro NUTRI styl (podle požadavku)
 const NUTRI_COLORS = ['#7b8a9a', '#c9a36a', '#7fa075', '#a17bb5'];
 
 $(document).ready(function() {
     loadSettings();
     renderHud();
-    
-    // --- PŘIDÁNO: Inicializace Iconpickeru ---
-    $('#input-icon').iconpicker({
-        title: 'Vyber ikonu',
-        placement: 'bottomRight',
-        hideOnSelect: true,
-        templates: {
-            search: '<input type="search" class="form-control iconpicker-search" placeholder="Hledat..." />'
-        }
-    });
-
-    // Fix: Iconpicker vkládá jen 'fa-heart', ale my chceme 'fa-solid fa-heart'. 
-    // Pokud chceš automaticky přidávat 'fa-solid', odkomentuj toto:
-    $('#input-icon').on('iconpickerSelected', function(e) {
-        let pickerValue = e.iconpickerValue;
-        if (!pickerValue.includes('fa-')) {
-             $('#input-icon').val('fa-solid ' + pickerValue);
-        }
-    });
-    // Prozatím to necháme defaultní, protože picker v3.2.0 vrací "fa fa-xxx" nebo "fab fa-xxx"
-    // a FontAwesome 6 má zpětnou kompatibilitu.
+    initIconPicker();
+    // --- ODSTRANĚNO: Inicializace Iconpickeru (již není potřeba) ---
 
     $('#input-scale').on('input', function() { $('#scale-val').text($(this).val()); });
     $('#input-mode').on('change', function() { toggleModalFields($(this).val()); });
@@ -121,9 +180,16 @@ function renderHud() {
         
         if (!data.enabled) el.css('opacity', '0.3');
 
-        // --- NUTRI STYLE (MULTI-RING SVG) ---
+        // Helper funkce pro vytvoření HTML ikony (Google Material)
+        const renderIcon = (iconName, color = null) => {
+            if (!iconName) return "";
+            let style = color ? `style="color:${color}"` : "";
+            // Třída hud-icon je v CSS definována pro nastavení velikosti
+            return `<span class="material-symbols-outlined hud-icon" ${style}>${iconName}</span>`;
+        };
+
+        // --- NUTRI STYLE ---
         if (data.style === 'nutri') {
-            // Generování SVG
             const size = 130;
             const stroke = 6;
             const gap = 3;
@@ -137,22 +203,12 @@ function renderHud() {
             let fillsHtml = "";
             let innerBgR = 0;
 
-            // Generujeme 4 kruhy (pro 4 sloty)
             for (let i = 0; i < 4; i++) {
                 const radius = maxR - i * (stroke + gap);
-                if (i === 3) innerBgR = radius - stroke; // Vnitřní pozadí pro text
-
-                // Vypočítáme SVG cestu (Arc)
+                if (i === 3) innerBgR = radius - stroke;
                 const d = describeArc(center, center, radius, startAngle, endAngle);
-                
-                // Track (šedé pozadí)
                 pathsHtml += `<path d="${d}" class="nutri-track" stroke-width="${stroke}" />`;
-                
-                // Fill (barevný popředí)
-                // Barva se bere z konstanty NUTRI_COLORS nebo fallback
                 const color = NUTRI_COLORS[i] || "#ffffff";
-                
-                // ID pro update: {key}_fill_{i}
                 fillsHtml += `<path id="${key}_fill_${i}" d="${d}" class="nutri-fill" stroke="${color}" stroke-width="${stroke}" stroke-dasharray="0 0" stroke-dashoffset="0" />`;
             }
 
@@ -170,9 +226,10 @@ function renderHud() {
                 </div>
             `);
         }
-        // --- GAUGE STYLE (Rafička) ---
+        // --- GAUGE STYLE ---
         else if (data.style === 'gauge') {
-            let iconHtml = data.icon ? `<i class="${data.icon} gauge-icon" style="color:${data.colorOuter}"></i>` : "";
+            // Gauge potřebuje specifickou třídu pro ikonu kvůli pozici
+            let iconHtml = data.icon ? `<span class="material-symbols-outlined hud-icon" style="color:${data.colorOuter}">${data.icon}</span>` : "";
             el.html(`
                 <div class="style-gauge">
                     <div class="gauge-bg" style="background:${data.colorBg}"></div>
@@ -184,7 +241,7 @@ function renderHud() {
                 </div>
             `);
         }
-        // --- STACK STYLE (Multi-Value) ---
+        // --- STACK STYLE ---
         else if (data.style === 'stack') {
             let rowsHtml = '';
             let slots = data.slots || [];
@@ -202,7 +259,7 @@ function renderHud() {
                 }
             });
 
-            let iconHtml = data.icon ? `<div class="stack-header-icon"><i class="${data.icon}"></i></div>` : "";
+            let iconHtml = data.icon ? `<div class="stack-header-icon">${renderIcon(data.icon)}</div>` : "";
             el.html(`
                 <div class="style-stack" style="background:${data.colorBg}">
                     <div class="stack-header">${iconHtml} <span>${data.label}</span></div>
@@ -212,7 +269,7 @@ function renderHud() {
         }
         // --- BAR STYLE ---
         else if (data.style === 'bar') {
-            let iconHtml = data.icon ? `<div class="bar-icon"><i class="${data.icon}" style="color:${data.colorOuter}"></i></div>` : "";
+            let iconHtml = data.icon ? `<div class="bar-icon">${renderIcon(data.icon, data.colorOuter)}</div>` : "";
             el.html(`
                 <div class="style-bar" style="background:${data.colorBg}">
                     ${iconHtml}
@@ -228,7 +285,7 @@ function renderHud() {
         } 
         // --- TEXT STYLE ---
         else if (data.style === 'text') {
-            let iconHtml = data.icon ? `<i class="${data.icon} hud-icon"></i>` : "";
+            let iconHtml = renderIcon(data.icon);
             el.html(`
                 <div class="style-text" style="color:${data.colorOuter}; background:${data.colorBg}">
                     ${iconHtml} <span class="text-label">${data.label}</span> <span class="text-value">0</span>
@@ -237,8 +294,7 @@ function renderHud() {
         } 
         // --- CIRCLE STYLE ---
         else {
-            let iconColor = data.colorOuter; 
-            let iconHtml = data.icon ? `<i class="${data.icon} hud-icon" style="color: ${iconColor};"></i>` : "";
+            let iconHtml = renderIcon(data.icon, data.colorOuter);
             let content = `<div class="style-circle"><div class="circle-content">${iconHtml}</div></div>`;
             el.html(content);
         }
@@ -300,21 +356,17 @@ function updateValues(statusData) {
                     count++;
                 }
 
-                // Výpočet procenta pro tento kruh
                 let pct = Math.min(Math.max((val - min) / (maxO - min), 0), 1);
                 
-                // SVG Path Math
                 let pathEl = document.getElementById(`${key}_fill_${i}`);
                 if (pathEl) {
                     let length = pathEl.getTotalLength();
-                    // offset = length - (percentage * length)
                     let offset = length - (pct * length);
                     pathEl.style.strokeDasharray = `${length} ${length}`;
                     pathEl.style.strokeDashoffset = offset;
                 }
             }
 
-            // Výpočet průměru (AVG)
             let avg = count > 0 ? Math.round(total / count) : 0;
             
             if (data.showValue !== false) {
@@ -421,6 +473,8 @@ function openModal(key) {
     $('#input-label').val(data.label || key.toUpperCase());
     $('#input-style').val(data.style || 'circle');
     $('#input-mode').val(data.mode);
+    
+    // Zde se jen načte textová hodnota (např. "favorite")
     $('#input-icon').val(data.icon);
     
     populateVariableSelects(data.srcOuter, data.srcInner, data.slots);
@@ -442,7 +496,6 @@ function openModal(key) {
 }
 
 function toggleModalStyleFields(style) {
-    // Pro styly, které vyžadují více slotů (Stack nebo Nutri)
     if (style === 'stack' || style === 'nutri') {
         $('.standard-inputs').hide();
         $('#stack-inputs').removeClass('hidden');
@@ -486,7 +539,10 @@ function saveModal() {
     indicators[k].colorOuter = $('#input-color-outer').val();
     indicators[k].colorInner = $('#input-color-inner').val();
     indicators[k].colorBg = $('#input-color-bg').val();
+    
+    // Ukládáme textovou hodnotu ikony
     indicators[k].icon = $('#input-icon').val();
+    
     indicators[k].scale = parseFloat($('#input-scale').val());
     indicators[k].showValue = $('#input-show-value').is(':checked');
     indicators[k].enabled = $('#input-enabled').is(':checked');
@@ -519,7 +575,17 @@ function openIOModal(mode) { $('#io-modal').removeClass('hidden'); let textarea 
 function closeIOModal() { $('#io-modal').addClass('hidden'); }
 function exportConfig() { openIOModal('export'); }
 function importConfig() { openIOModal('import'); }
-function showNotification(message, isError = false) { let el = $('#custom-notification'); let icon = $('#notif-icon'); $('#notif-text').text(message); isError ? (el.addClass('error'), icon.attr('class', 'fa-solid fa-circle-exclamation')) : (el.removeClass('error'), icon.attr('class', 'fa-solid fa-circle-check')); el.removeClass('hidden'); setTimeout(() => { el.addClass('hidden'); }, 3000); }
+function showNotification(message, isError = false) { 
+    let el = $('#custom-notification'); 
+    let icon = $('#notif-icon'); 
+    $('#notif-text').text(message); 
+    
+    // Upraveno pro Google Icons
+    isError ? (el.addClass('error'), icon.text('error')) : (el.removeClass('error'), icon.text('check_circle')); 
+    
+    el.removeClass('hidden'); 
+    setTimeout(() => { el.addClass('hidden'); }, 3000); 
+}
 function applyImport() { try { let parsed = JSON.parse($('#io-textarea').val()); if (!parsed.health && !parsed.stamina) throw new Error("Neplatná data."); indicators = JSON.parse(JSON.stringify(defaultSettings)); $.extend(true, indicators, parsed); renderHud(); saveSettings(); closeIOModal(); showNotification("Nahráno!"); } catch (e) { showNotification("Chyba: " + e.message, true); } }
 function copyToClipboard() { let ta = document.getElementById("io-textarea"); ta.select(); navigator.clipboard.writeText(ta.value).then(() => showNotification("Zkopírováno!")); }
 function resetSettings() { indicators = JSON.parse(JSON.stringify(defaultSettings)); localStorage.removeItem('redm_hud_v7'); $.post('https://' + GetParentResourceName() + '/resetSettings', JSON.stringify({})); renderHud(); }
@@ -530,7 +596,7 @@ function loadSettings() { let saved = localStorage.getItem('redm_hud_v7'); if (s
 function addNewElement() {
     let newId = "custom_" + Math.floor(Math.random() * 100000);
     indicators[newId] = {
-        label: "NOVÝ", icon: "fa-solid fa-star", style: "circle", mode: "single",
+        label: "NOVÝ", icon: "star", style: "circle", mode: "single", // icon: star
         srcOuter: "", srcInner: "", colorOuter: "#ffffff", colorInner: "#ffffff", 
         colorBg: "rgba(0,0,0,0.5)", min: 0, maxOuter: 100, maxInner: 100, 
         speed: 400, scale: 1.0, showValue: true, x: 50, y: 50, enabled: true 
@@ -566,4 +632,58 @@ function describeArc(x, y, radius, startAngle, endAngle) {
         "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
     ].join(" ");
     return d;
+}
+
+// --- LOGIKA PRO CUSTOM ICON PICKER ---
+
+function initIconPicker() {
+    const grid = $('#picker-grid');
+    grid.empty();
+
+    // Vygenerovat HTML pro každou ikonu
+    GOOGLE_ICONS_LIST.forEach(iconName => {
+        const item = $(`
+            <div class="picker-item" title="${iconName}" onclick="selectIcon('${iconName}')">
+                <span class="material-symbols-outlined">${iconName}</span>
+            </div>
+        `);
+        grid.append(item);
+    });
+
+    // Event listener pro hledání
+    $('#picker-search-input').on('keyup', function() {
+        const val = $(this).val().toLowerCase();
+        $('.picker-item').each(function() {
+            const iconName = $(this).attr('title');
+            if (iconName.includes(val)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Zavření pickeru při kliknutí mimo
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#custom-icon-picker, #btn-icon-picker').length) {
+            $('#custom-icon-picker').addClass('hidden');
+        }
+    });
+}
+
+function toggleIconPicker() {
+    const picker = $('#custom-icon-picker');
+    if (picker.hasClass('hidden')) {
+        picker.removeClass('hidden');
+        $('#picker-search-input').focus();
+    } else {
+        picker.addClass('hidden');
+    }
+}
+
+function selectIcon(iconName) {
+    $('#input-icon').val(iconName);
+    // Trigger input event, aby se případně něco aktualizovalo (pokud bys tam měl listener)
+    $('#input-icon').trigger('input'); 
+    $('#custom-icon-picker').addClass('hidden');
 }

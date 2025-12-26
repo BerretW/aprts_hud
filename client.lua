@@ -29,6 +29,7 @@ RegisterNUICallback('resetSettings', function(data, cb)
     DeleteResourceKvp('hud_settings') -- Smaže data z KVP
     cb('ok')
 end)
+
 local function waitForCharacter()
     while not LocalPlayer do
         Citizen.Wait(100)
@@ -155,20 +156,54 @@ end)
 local bodyTemp = 0.0
 local stats = {}
 local skills = {}
+
+--- Bezpečné zavolání exportu s návratovou hodnotou a defaultem
+--- @param resourceName string - Název scriptu (např. 'aprts_metabolism')
+--- @param functionName string - Název exportu (např. 'getMetabolism')
+--- @param defaultReturn any - Co se má vrátit, když to selže (např. false, 0, nebo prázdná tabulka {})
+--- @param ... any - Případné argumenty pro ten export
+function SafeExport(resourceName, functionName, defaultReturn, ...)
+    -- 1. Rychlá kontrola, jestli script vůbec běží. Ušetří výkon, než volat pcall.
+    if GetResourceState(resourceName) ~= "started" then
+        return defaultReturn
+    end
+
+    -- 2. Samotný pokus o zavolání exportu
+    local success, result = pcall(exports[resourceName][functionName], ...)
+
+    -- 3. Pokud proběhlo OK, vrátíme výsledek, jinak default
+    if success then
+        return result
+    else
+        -- Volitelně: Můžeš si sem dát print pro debug, pokud chceš vidět, že to spadlo
+        -- print("^1[HUD ERROR]^7 Export failed: " .. resourceName .. ":" .. functionName)
+        return defaultReturn
+    end
+end
+
 CreateThread(function()
     waitForCharacter()
     while true do
         Wait(600)
 
-        local success, getstats = pcall(function()
-            return exports.aprts_metabolism:getMetabolism()
-        end)
-
-        if success and getstats then
-            stats = getstats
-            stats.state = exports.aprts_metabolism:getState()
+        stats = SafeExport("aprts_metabolism", "getMetabolism", {})
+        stats.state = SafeExport("aprts_metabolism", "getState", {})
+        stats.tool = SafeExport("aprts_tools", "GetEquipedTool", "none")
+        stats.tool_class = SafeExport("aprts_tools", "GetEquipedToolClass", "none")
+        stats.tool_durability = SafeExport("aprts_tools", "GetToolDurability", 0)
+        stats.body_temp = SafeExport("aprts_medicalAtention", "getBodyTemperature", 36.0)
+        stats.mined_nodes = SafeExport("aprts_miningV2", "getMinedNodesCount", 0)
+        stats.quest_desc = SafeExport("aprts_simplequests", "GetActiveQuest", {}).description or "No active quest"
+        -- print(json.encode(SafeExport("aprts_simplequests", "GetActiveQuest", {}), { indent = true }))
+        skills = SafeExport("westhaven_skill", "getMySkills", {})
+        -- stats.skills = skills
+        for skillName, skillData in pairs(skills) do
+            stats["skill_" .. skillName .. "_level"] = skillData.level
+            stats["skill_" .. skillName .. "_experience"] = skillData.experience
         end
-        success = nil
+
+        
+
         -- print(json.encode(stats, { indent = true }))
         local ped = PlayerPedId()
         local playerPos = GetEntityCoords(ped)
@@ -179,48 +214,17 @@ CreateThread(function()
         local healthOuter = GetEntityHealth(ped) -- Aktuální HP
         -- Core Value (Index 0 = Health)
         local healthInner = Citizen.InvokeNative(0x36731AC041289BB1, ped, 0)
-
         -- 2. STAMINA
         local stamina = GetAttributeCoreValue(PlayerPedId(), 1)
         local softStamina = math.floor(GetPedStamina(PlayerPedId()))
-        local tool = nil
-        local toolClass = nil
-        local success, tool = pcall(function()
-            return exports.aprts_tools:GetEquipedTool()
-        end)
-        if success and tool then
-            stats.tool = tool
-            stats.tool_class = exports.aprts_tools:GetEquipedToolClass()
-        else
-            stats.tool = "none"
-        end
+
         -- 3. DEAD EYE (Volitelné, pokud bys chtěl)
         -- local deadEyeOuter = Citizen.InvokeNative(0xD53343AA4FB2200D, PlayerId())
         -- local deadEyeInner = Citizen.InvokeNative(0x36731AC041289BB1, ped, 2)
 
         -- 4. METABOLISMUS (Hunger/Thirst) - Zde doplň své exporty
         -- 5. další užitečnosti
-        success, bodyTemp = pcall(function()
-            return exports.aprts_medicalAtention:getBodyTemperature()
-        end)
-        if success and bodyTemp then
-            stats.body_temp = math.floor(bodyTemp)
-        else
-            stats.body_temp = 36 -- Defaultní hodnota, pokud export není dostupný
-        end
 
-        success, skills = pcall(function()
-            return exports.westhaven_skill:getMySkills()
-        end)
-        if success and skills then
-            -- stats.skills = skills
-            for skillName, skillData in pairs(skills) do
-                stats["skill_" .. skillName .. "_level"] = skillData.level
-                stats["skill_" .. skillName .. "_experience"] = skillData.experience
-            end
-        else
-            stats.skills = {} -- Defaultní hodnota, pokud export není dostupný
-        end
         local weaponObj = GetPedWeaponObject(ped, true)
         local hasWapon, weaponHash = GetCurrentPedWeapon(ped, true)
 

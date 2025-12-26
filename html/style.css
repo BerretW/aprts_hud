@@ -1,5 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
 
+/* --- ZÁKLADNÍ NASTAVENÍ PRO GOOGLE ICONS --- */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Malé ikony v tlačítkách */
+.icon-btn {
+    font-size: 16px; 
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
 body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 'Roboto Condensed', sans-serif; }
 #hud-container { width: 100vw; height: 100vh; position: relative; z-index: 10; }
 #grid-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 5; background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px); pointer-events: none; }
@@ -10,7 +34,7 @@ body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 
 
 /* --- TEXT STYLE --- */
 .style-text { font-size: 16px; font-weight: bold; text-shadow: 1px 1px 2px black; padding: 5px 10px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; display: flex; align-items: center; gap: 8px; white-space: nowrap; color:white;}
-.style-text .hud-icon { font-size: 18px; margin-right: 5px; }
+.style-text .hud-icon { font-size: 20px; margin-right: 5px; }
 
 /* --- CIRCLE STYLE --- */
 .style-circle { position: relative; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; }
@@ -18,11 +42,12 @@ body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 
 .ring-outer { transform: translate(-50%, -50%); z-index: 1; width: 70px; height: 70px; }
 .ring-inner { transform: translate(-50%, -50%) scale(0.7); z-index: 2; width: 70px; height: 70px; }
 .style-circle .circle-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.9); text-shadow: 1px 1px 2px black; line-height: 1; pointer-events: none; }
-.style-circle .hud-icon { font-size: 18px; margin-bottom: 2px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
+.style-circle .hud-icon { font-size: 24px; margin-bottom: 2px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
 
 /* --- BAR STYLE --- */
 .style-bar { display: flex; align-items: center; background: rgba(0, 0, 0, 0.6); border-radius: 4px; padding: 5px; width: 200px; height: 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; }
-.style-bar .bar-icon { width: 30px; display: flex; justify-content: center; align-items: center; font-size: 18px; margin-right: 8px; }
+.style-bar .bar-icon { width: 30px; display: flex; justify-content: center; align-items: center; margin-right: 8px; }
+.style-bar .bar-icon .hud-icon { font-size: 22px; }
 .style-bar .bar-info { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
 .style-bar .bar-label { font-size: 10px; text-transform: uppercase; font-weight: bold; opacity: 0.8; margin-bottom: 3px; letter-spacing: 1px; }
 .style-bar .bar-track { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.5); border-radius: 4px; overflow: hidden; }
@@ -35,13 +60,15 @@ body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 
 .gauge-arc { position: absolute; bottom: 0; left: 5px; width: 90px; height: 45px; border-top-left-radius: 90px; border-top-right-radius: 90px; border: 4px solid white; border-bottom: none; z-index: 2; box-sizing: border-box; }
 .gauge-needle { position: absolute; bottom: 0; left: 50%; width: 4px; height: 45px; background: red; z-index: 5; transform-origin: bottom center; transform: translateX(-50%) rotate(-90deg); border-radius: 2px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .gauge-cover { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: #333; border-radius: 50%; z-index: 6; display: flex; align-items: center; justify-content: center; border: 2px solid #555; }
-.gauge-cover i { font-size: 10px; }
+.gauge-cover .hud-icon { font-size: 14px; }
 .gauge-value { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 14px; font-weight: bold; z-index: 4; text-shadow: 1px 1px 2px black; }
 .gauge-label { position: absolute; bottom: -25px; width: 100%; text-align: center; font-size: 12px; font-weight: bold; text-transform: uppercase; text-shadow: 1px 1px 2px black; background: rgba(0,0,0,0.5); padding: 2px; border-radius: 4px; }
 
 /* --- STACK STYLE --- */
 .style-stack { display: flex; flex-direction: column; background: rgba(0,0,0,0.7); border-radius: 5px; padding: 8px; width: 160px; color: white; border: 1px solid rgba(255,255,255,0.1); }
 .stack-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; font-weight: bold; font-size: 13px; text-transform: uppercase; }
+.stack-header-icon { display: flex; align-items: center; justify-content: center; }
+.stack-header-icon .hud-icon { font-size: 16px; }
 .stack-body { display: flex; flex-direction: column; gap: 4px; }
 .stack-row { display: flex; align-items: center; font-size: 11px; gap: 5px; }
 .stack-name { width: 30px; font-weight: bold; color: #ccc; }
@@ -63,15 +90,16 @@ body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: 
 #edit-window { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); pointer-events: auto; background: rgba(0,0,0,0.95); color: white; padding: 0 20px 20px 20px; text-align: center; border-radius: 8px; border: 2px solid #d9a838; box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 5001; width: 320px; }
 .drag-handle { cursor: move; background: #d9a838; color: black; margin: 0 -20px 15px -20px; padding: 10px; border-radius: 6px 6px 0 0; }
 .drag-handle h1 { margin: 0; font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.drag-handle h1 .material-symbols-outlined { font-size: 24px; }
 
 /* TLAČÍTKA */
-.add-btn { background: #38d960; border: none; padding: 12px; font-weight: bold; cursor: pointer; color: black; border-radius: 4px; width: 100%; margin-bottom: 10px; font-size: 14px; }
+.add-btn { background: #38d960; border: none; padding: 12px; font-weight: bold; cursor: pointer; color: black; border-radius: 4px; width: 100%; margin-bottom: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; }
 .add-btn:hover { background: #66ff88; }
 .delete-btn { width: 100%; border: none; padding: 8px; font-weight: bold; cursor: pointer; color: white; border-radius: 4px; margin-top: 5px; opacity: 0.8; }
 .delete-btn:hover { opacity: 1; }
 .save-btn { background: #d9a838; border: none; padding: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: black; border-radius: 4px; width: 100%; }
 .reset-btn { background: #d93838; border: none; padding: 8px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; border-radius: 4px; width: 100%; }
-.io-btn { background: #388bd9; border: none; padding: 8px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; border-radius: 4px; flex: 1; }
+.io-btn { background: #388bd9; border: none; padding: 8px; font-weight: bold; font-size: 12px; cursor: pointer; color: white; border-radius: 4px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;}
 .hidden { display: none !important; }
 #edit-overlay:not([style*="display: block"]) { display: none; }
 
@@ -102,50 +130,115 @@ select:disabled { opacity: 0.5; cursor: not-allowed; }
 .notification { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 7000; background: rgba(0, 0, 0, 0.95); border: 2px solid #38d960; border-radius: 6px; padding: 15px 25px; transition: all 0.3s; opacity: 1; }
 .notification.hidden { opacity: 0; top: -50px; pointer-events: none; }
 .notification-content { display: flex; align-items: center; gap: 12px; color: white; font-weight: bold; text-transform: uppercase; }
-.notification i { font-size: 20px; color: #38d960; }
+.notification .material-symbols-outlined { font-size: 24px; color: #38d960; }
 .notification.error { border-color: #d93838; }
-.notification.error i { color: #d93838; }
+.notification.error .material-symbols-outlined { color: #d93838; }
 
-/* --- ICON PICKER OVERRIDES --- */
-.iconpicker-popover {
-    z-index: 9999 !important; /* Musí být nad modálem (ten má z-index 6000) */
-    background: #1a1a1a !important;
-    border: 2px solid #555 !important;
-    color: white !important;
+/* --- CUSTOM ICON PICKER (FLEXBOX FIX) --- */
+.icon-input-group {
+    display: flex;
+    gap: 5px;
 }
 
-.iconpicker-popover .popover-title {
-    background: #222 !important;
-    border-bottom: 1px solid #444 !important;
-    color: white !important;
-    font-weight: bold;
-}
-
-.iconpicker-popover .popover-title input.iconpicker-search {
-    background: #333 !important;
-    border: 1px solid #555 !important;
-    color: white !important;
-}
-
-.iconpicker-popover .popover-footer {
-    background: #222 !important;
-    border-top: 1px solid #444 !important;
-}
-
-.iconpicker-items .iconpicker-item {
-    background: #333 !important;
-    border: 1px solid #444 !important;
-    color: #ccc !important;
+#btn-icon-picker {
+    width: 40px;
+    background: #444;
+    border: 1px solid #555;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 4px;
+    transition: background 0.2s;
 }
 
-.iconpicker-items .iconpicker-item:hover {
-    background: #d9a838 !important; /* Gold hover */
-    color: black !important;
+#btn-icon-picker:hover {
+    background: #d9a838;
+    color: black;
 }
 
-.iconpicker-items .iconpicker-item.iconpicker-selected {
-    background: #38d960 !important; /* Green selected */
-    color: black !important;
-    border-color: #38d960 !important;
+#custom-icon-picker {
+    position: absolute;
+    top: 65px;
+    right: -10px; 
+    width: 270px; /* Fixní šířka okna */
+    background: #1a1a1a;
+    border: 2px solid #d9a838;
+    border-radius: 6px;
+    z-index: 9999;
+    padding: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.9);
+    box-sizing: border-box; /* Důležité: padding se započítá do šířky */
+}
+
+.picker-search {
+    display: flex;
+    align-items: center;
+    background: #333;
+    border-radius: 4px;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #555;
+}
+
+.picker-search input {
+    border: none !important;
+    background: transparent !important;
+    outline: none;
+    width: 100%;
+    color: white;
+    padding: 0 !important;
+}
+
+.picker-search span {
+    color: #888;
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+/* ZMĚNA: Použijeme Flexbox místo Gridu pro spolehlivé zalamování */
+#picker-grid {
+    display: flex;
+    flex-wrap: wrap; /* TOTO zajistí zalomení na nový řádek */
+    gap: 5px;
+    max-height: 250px;
+    overflow-y: auto;  /* Povolit vertikální scroll */
+    overflow-x: hidden; /* Zakázat horizontální scroll */
+    padding-right: 5px;
+    align-content: flex-start; /* Ikony se "nalepí" nahoru */
+}
+
+/* Stylování scrollbaru */
+#picker-grid::-webkit-scrollbar { width: 5px; }
+#picker-grid::-webkit-scrollbar-track { background: #222; }
+#picker-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+.picker-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Fixní rozměry dlaždice - vejde se jich cca 5-6 na řádek */
+    width: 38px;
+    height: 38px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #ccc;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Zakázat zmenšování ikony */
+}
+
+.picker-item:hover {
+    background: #d9a838;
+    color: black;
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+.picker-item .material-symbols-outlined {
+    font-size: 22px; /* O trochu menší ikona, aby se hezky vešla */
+    pointer-events: none; /* Kliknutí projde skrz na div */
 }

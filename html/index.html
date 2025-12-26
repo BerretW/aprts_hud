@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- PŘIDÁNO: Iconpicker CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/css/fontawesome-iconpicker.min.css">
+    
+    <!-- Google Material Symbols (Outlined verze) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
     <title>RedM HUD</title>
 </head>
 <body>
@@ -16,7 +16,8 @@
 
     <div id="custom-notification" class="notification hidden">
         <div class="notification-content">
-            <i id="notif-icon" class="fa-solid fa-circle-check"></i>
+            <!-- Ikona notifikace (Google) -->
+            <span id="notif-icon" class="material-symbols-outlined">check_circle</span>
             <span id="notif-text">Nastavení uloženo</span>
         </div>
     </div>
@@ -24,7 +25,9 @@
     <div id="edit-overlay" style="display: none;">
         <div id="edit-window" class="edit-info">
             <div class="drag-handle">
-                <h1><i class="fa-solid fa-arrows-up-down-left-right"></i> EDIT MODE</h1>
+                <h1>
+                    <span class="material-symbols-outlined">open_with</span> EDIT MODE
+                </h1>
             </div>
             
             <p>Levé tl. myši: Přesunout HUD | Kliknutí: Nastavení</p>
@@ -38,11 +41,17 @@
             </div>
 
             <div class="overlay-buttons">
-                <button class="add-btn" onclick="addNewElement()"><i class="fa-solid fa-plus"></i> PŘIDAT ELEMENT</button>
+                <button class="add-btn" onclick="addNewElement()">
+                    <span class="material-symbols-outlined icon-btn">add</span> PŘIDAT ELEMENT
+                </button>
                 <button class="save-btn" onclick="closeEditMode()">ULOŽIT A ZAVŘÍT</button>
                 <div class="io-group">
-                    <button class="io-btn" onclick="exportConfig()"><i class="fa-solid fa-download"></i> EXPORT</button>
-                    <button class="io-btn" onclick="importConfig()"><i class="fa-solid fa-upload"></i> IMPORT</button>
+                    <button class="io-btn" onclick="exportConfig()">
+                        <span class="material-symbols-outlined icon-btn">download</span> EXPORT
+                    </button>
+                    <button class="io-btn" onclick="importConfig()">
+                        <span class="material-symbols-outlined icon-btn">upload</span> IMPORT
+                    </button>
                 </div>
                 <button class="reset-btn" onclick="resetSettings()">RESETOVAT VŠE</button>
             </div>
@@ -114,12 +123,29 @@
 
             <div class="form-group"><label>Pozadí</label><input type="color" id="input-color-bg"></div>
 
-            <div class="form-row">
-                <!-- UPRAVENO: Input icon je nyní připraven pro picker -->
+<div class="form-row">
+                <!-- UPRAVENÁ SEKCE S VLASTNÍM PICKEREM -->
                 <div class="form-group half" style="position: relative;">
-                    <label>Ikona</label>
-                    <input type="text" id="input-icon" class="icp icp-auto" data-placement="bottomRight">
+                    <label>Ikona (Google Material)</label>
+                    <div class="icon-input-group">
+                        <input type="text" id="input-icon" placeholder="vyber nebo napiš..." autocomplete="off">
+                        <button id="btn-icon-picker" onclick="toggleIconPicker()">
+                            <span class="material-symbols-outlined">grid_view</span>
+                        </button>
+                    </div>
+                    
+                    <!-- VLASTNÍ PICKER DROPDOWN -->
+                    <div id="custom-icon-picker" class="hidden">
+                        <div class="picker-search">
+                            <span class="material-symbols-outlined">search</span>
+                            <input type="text" id="picker-search-input" placeholder="Hledat ikonu...">
+                        </div>
+                        <div id="picker-grid">
+                            <!-- Ikony se vygenerují přes JS -->
+                        </div>
+                    </div>
                 </div>
+
                 <div class="form-group half"><label>Minimální hodnota</label><input type="number" id="input-min"></div>
             </div>
 
@@ -160,8 +186,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
-    <!-- PŘIDÁNO: Iconpicker JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
